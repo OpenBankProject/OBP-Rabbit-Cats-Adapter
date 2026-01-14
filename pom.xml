@@ -73,10 +73,22 @@
       <version>${fs2.rabbit.version}</version>
     </dependency>
 
-    <!-- http4s for HTTP client -->
+    <!-- RabbitMQ Java Client (simpler alternative) -->
+    <dependency>
+      <groupId>com.rabbitmq</groupId>
+      <artifactId>amqp-client</artifactId>
+      <version>5.20.0</version>
+    </dependency>
+
+    <!-- http4s for HTTP client and server -->
     <dependency>
       <groupId>org.http4s</groupId>
       <artifactId>http4s-ember-client_${scala.version}</artifactId>
+      <version>${http4s.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.http4s</groupId>
+      <artifactId>http4s-ember-server_${scala.version}</artifactId>
       <version>${http4s.version}</version>
     </dependency>
     <dependency>

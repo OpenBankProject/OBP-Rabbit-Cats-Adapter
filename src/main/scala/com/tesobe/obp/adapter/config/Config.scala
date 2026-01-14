@@ -20,6 +20,13 @@ package com.tesobe.obp.adapter.config
 import cats.effect.IO
 import scala.concurrent.duration._
 
+/** HTTP server configuration for discovery page */
+case class HttpConfig(
+    host: String,
+    port: Int,
+    enabled: Boolean
+)
+
 /** RabbitMQ connection configuration */
 case class RabbitMQConfig(
     host: String,
@@ -57,6 +64,7 @@ case class CBSConfig(
 
 /** Complete adapter configuration */
 case class AdapterConfig(
+    http: HttpConfig,
     rabbitmq: RabbitMQConfig,
     queue: QueueConfig,
     cbs: CBSConfig,
@@ -68,6 +76,12 @@ object Config {
 
   /** Load configuration from environment variables */
   def load: IO[AdapterConfig] = IO {
+    val httpConfig = HttpConfig(
+      host = sys.env.getOrElse("HTTP_HOST", "0.0.0.0"),
+      port = sys.env.getOrElse("HTTP_PORT", "8099").toInt,
+      enabled = sys.env.getOrElse("HTTP_ENABLED", "true").toBoolean
+    )
+
     val rabbitmqConfig = RabbitMQConfig(
       host = sys.env.getOrElse("RABBITMQ_HOST", "localhost"),
       port = sys.env.getOrElse("RABBITMQ_PORT", "5672").toInt,
@@ -101,6 +115,7 @@ object Config {
     )
 
     AdapterConfig(
+      http = httpConfig,
       rabbitmq = rabbitmqConfig,
       queue = queueConfig,
       cbs = cbsConfig,
@@ -128,6 +143,7 @@ object Config {
 
   /** Validate configuration */
   def validate(config: AdapterConfig): IO[Unit] = IO {
+    require(config.http.port > 0 && config.http.port < 65536, "HTTP port must be between 1 and 65535")
     require(config.rabbitmq.host.nonEmpty, "RabbitMQ host must not be empty")
     require(config.rabbitmq.port > 0 && config.rabbitmq.port < 65536, "RabbitMQ port must be between 1 and 65535")
     require(config.queue.requestQueue.nonEmpty, "Request queue name must not be empty")

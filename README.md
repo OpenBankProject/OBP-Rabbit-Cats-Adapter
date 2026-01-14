@@ -54,6 +54,26 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed documentation.
 
 ## Quick Start
 
+**Want to try it right now?**
+
+```bash
+# 1. Start RabbitMQ
+./start_rabbitmq.sh
+
+# 2. Build and run (in new terminal)
+./build_and_run.sh
+
+# 3. Open browser to http://localhost:8080
+# 4. Click "Send Get Adapter Info" button
+# 5. Watch the console logs!
+```
+
+See [QUICKSTART.md](QUICKSTART.md) for detailed instructions.
+
+---
+
+## Detailed Setup
+
 ### Prerequisites
 
 - Java 11+
@@ -110,6 +130,11 @@ class YourBankConnector(
 Create `.env` file or set environment variables:
 
 ```bash
+# HTTP Server Configuration (Discovery Page)
+HTTP_HOST=0.0.0.0
+HTTP_PORT=8080
+HTTP_ENABLED=true
+
 # RabbitMQ Configuration
 RABBITMQ_HOST=localhost
 RABBITMQ_PORT=5672
@@ -142,6 +167,42 @@ Or with Docker:
 ```bash
 docker build -t obp-adapter .
 docker run --env-file .env obp-adapter
+```
+
+### 5. Access Discovery Page
+
+Once running, open your browser to:
+
+```
+http://localhost:8080
+```
+
+The discovery page shows:
+- **🏥 **Health & Status** - Health check and readiness endpoints
+- 🐰 **RabbitMQ** - Connection info and management UI link
+- 📊 **Observability** - Metrics and logging configuration
+- 🏛️ **CBS Configuration** - Core Banking System settings
+- 📚 **Documentation** - Links to OBP resources
+
+**Available Endpoints:**
+- `GET /` - Discovery page (HTML)
+- `GET /health` - Health check (JSON)
+- `GET /ready` - Readiness check (JSON)
+- `GET /info` - Service info (JSON)
+
+Example health check:
+```bash
+curl http://localhost:8080/health
+```
+
+Response:
+```json
+{
+  "status": "healthy",
+  "service": "OBP-Rabbit-Cats-Adapter",
+  "version": "1.0.0-SNAPSHOT",
+  "timestamp": "1704067200000"
+}
 ```
 
 ## CBS Connector Interface
@@ -410,6 +471,14 @@ spec:
 ```
 
 ## Configuration Reference
+
+### HTTP Server
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `HTTP_HOST` | HTTP server host | `0.0.0.0` |
+| `HTTP_PORT` | HTTP server port | `8080` |
+| `HTTP_ENABLED` | Enable HTTP server | `true` |
 
 ### RabbitMQ
 
