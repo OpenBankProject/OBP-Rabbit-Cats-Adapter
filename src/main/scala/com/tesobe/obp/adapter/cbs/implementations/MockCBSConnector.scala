@@ -23,7 +23,6 @@ import com.tesobe.obp.adapter.models._
 import com.tesobe.obp.adapter.telemetry.Telemetry
 import io.circe._
 import io.circe.syntax._
-import io.circe.parser._
 
 /**
  * Mock CBS Connector for testing and development.
@@ -46,8 +45,6 @@ class MockCBSConnector(telemetry: Telemetry) extends CBSConnector {
     data: JsonObject,
     callContext: CallContext
   ): IO[CBSResponse] = {
-    
-    telemetry.info(s"Handling message: $messageType", Some(callContext.correlationId)) *>
     
     messageType match {
       case "obp.getAdapterInfo" => getAdapterInfo(callContext)
@@ -225,7 +222,7 @@ class MockCBSConnector(telemetry: Telemetry) extends CBSConnector {
           "status" -> Json.fromString("COMPLETED"),
           "posted" -> Json.fromString(java.time.Instant.now().toString)
         ),
-        backendMessages = List(
+        List(
           BackendMessage(
             source = "MockCBS",
             status = "success",
@@ -242,9 +239,9 @@ class MockCBSConnector(telemetry: Telemetry) extends CBSConnector {
     telemetry.warn(s"Unsupported message type: $messageType", Some(callContext.correlationId)) *>
     IO.pure(
       CBSResponse.error(
-        errorCode = "OBP-50000",
+        code = "OBP-50000",
         message = s"Message type not implemented: $messageType",
-        backendMessages = List(
+        messages = List(
           BackendMessage(
             source = "MockCBS",
             status = "error",

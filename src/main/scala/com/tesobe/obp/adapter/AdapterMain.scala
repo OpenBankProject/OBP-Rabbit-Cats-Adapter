@@ -82,7 +82,7 @@ object AdapterMain extends IOApp {
       _ <- IO.println("")
       
       // Keep running
-      _ <- IO.never
+      _ <- IO.never[Unit]
       
     } yield ExitCode.Success
   }
