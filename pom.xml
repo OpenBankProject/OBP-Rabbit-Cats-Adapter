@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.tesobe</groupId>
+  <artifactId>obp-rabbit-cats-adapter</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>OBP RabbitMQ Cats Adapter</name>
+  <description>An OBP adapter using RabbitMQ for messaging and Cats Effect for functional programming</description>
+  <inceptionYear>2025</inceptionYear>
+
+  <properties>
+    <scala.version>2.13</scala.version>
+    <scala.compiler>2.13.15</scala.compiler>
+    <http4s.version>0.23.30</http4s.version>
+    <cats.version>2.12.0</cats.version>
+    <cats.effect.version>3.5.7</cats.effect.version>
+    <circe.version>0.14.9</circe.version>
+    <fs2.version>3.11.0</fs2.version>
+    <fs2.rabbit.version>5.2.0</fs2.rabbit.version>
+    <logback.version>1.2.13</logback.version>
+    <scalatest.version>3.2.19</scalatest.version>
+
+    <!-- Build settings -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
+    <java.version>11</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>scala-tools.releases</id>
+      <name>Scala-Tools Dependencies Repository for Releases</name>
+      <url>https://oss.sonatype.org/content/repositories/releases/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- Scala -->
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scala.compiler}</version>
+    </dependency>
+
+    <!-- Cats and Cats Effect -->
+    <dependency>
+      <groupId>org.typelevel</groupId>
+      <artifactId>cats-core_${scala.version}</artifactId>
+      <version>${cats.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.typelevel</groupId>
+      <artifactId>cats-effect_${scala.version}</artifactId>
+      <version>${cats.effect.version}</version>
+    </dependency>
+
+    <!-- FS2 -->
+    <dependency>
+      <groupId>co.fs2</groupId>
+      <artifactId>fs2-core_${scala.version}</artifactId>
+      <version>${fs2.version}</version>
+    </dependency>
+
+    <!-- FS2 RabbitMQ -->
+    <dependency>
+      <groupId>dev.profunktor</groupId>
+      <artifactId>fs2-rabbit_${scala.version}</artifactId>
+      <version>${fs2.rabbit.version}</version>
+    </dependency>
+
+    <!-- http4s for HTTP client -->
+    <dependency>
+      <groupId>org.http4s</groupId>
+      <artifactId>http4s-ember-client_${scala.version}</artifactId>
+      <version>${http4s.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.http4s</groupId>
+      <artifactId>http4s-dsl_${scala.version}</artifactId>
+      <version>${http4s.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.http4s</groupId>
+      <artifactId>http4s-circe_${scala.version}</artifactId>
+      <version>${http4s.version}</version>
+    </dependency>
+
+    <!-- Circe JSON -->
+    <dependency>
+      <groupId>io.circe</groupId>
+      <artifactId>circe-core_${scala.version}</artifactId>
+      <version>${circe.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.circe</groupId>
+      <artifactId>circe-generic_${scala.version}</artifactId>
+      <version>${circe.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.circe</groupId>
+      <artifactId>circe-parser_${scala.version}</artifactId>
+      <version>${circe.version}</version>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.scalatest</groupId>
+      <artifactId>scalatest_${scala.version}</artifactId>
+      <version>${scalatest.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.typelevel</groupId>
+      <artifactId>cats-effect-testing-scalatest_${scala.version}</artifactId>
+      <version>1.5.0</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
+
+    <plugins>
+      <!-- Scala compiler plugin -->
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>4.8.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <scalaVersion>${scala.compiler}</scalaVersion>
+          <args>
+            <arg>-deprecation</arg>
+            <arg>-feature</arg>
+            <arg>-unchecked</arg>
+            <arg>-Xlint</arg>
+          </args>
+        </configuration>
+      </plugin>
+
+      <!-- Surefire plugin for tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+
+      <!-- ScalaTest plugin -->
+      <plugin>
+        <groupId>org.scalatest</groupId>
+        <artifactId>scalatest-maven-plugin</artifactId>
+        <version>2.2.0</version>
+        <configuration>
+          <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+          <junitxml>.</junitxml>
+          <filereports>TestSuite.txt</filereports>
+        </configuration>
+        <executions>
+          <execution>
+            <id>test</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Fat JAR plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>com.tesobe.obp.adapter.AdapterMain</mainClass>
+                </transformer>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Compiler plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
