@@ -67,18 +67,23 @@ class RabbitMQClient(config: AdapterConfig) {
   }
 
   /**
-   * Publish a message to a queue
+   * Publish a message to a queue with routing key
    */
   def publishMessage(
     channel: Channel,
     queueName: String,
-    message: String
+    message: String,
+    routingKey: Option[String] = None
   ): IO[Unit] = {
     IO {
+      val props = new com.rabbitmq.client.AMQP.BasicProperties.Builder()
+        .contentType("application/json")
+        .build()
+      
       channel.basicPublish(
         "",           // exchange (empty = default)
         queueName,    // routing key (queue name)
-        null,         // properties
+        props,        // properties
         message.getBytes(StandardCharsets.UTF_8)
       )
     }
@@ -87,11 +92,12 @@ class RabbitMQClient(config: AdapterConfig) {
   /**
    * Consume messages from a queue with a callback
    * Returns an IO that will run forever, processing messages
+   * Handler receives: (message, routingKey)
    */
   def consumeMessages(
     channel: Channel,
     queueName: String,
-    handler: String => IO[Unit]
+    handler: (String, String) => IO[Unit]
   ): IO[Unit] = {
     IO {
       // Set prefetch count
@@ -101,8 +107,9 @@ class RabbitMQClient(config: AdapterConfig) {
 
       val deliverCallback: DeliverCallback = (consumerTag, delivery) => {
         val message = new String(delivery.getBody, StandardCharsets.UTF_8)
+        val routingKey = delivery.getEnvelope.getRoutingKey
         val processAndAck = for {
-          _ <- handler(message)
+          _ <- handler(message, routingKey)
           _ <- IO(channel.basicAck(delivery.getEnvelope.getDeliveryTag, false))
         } yield ()
         

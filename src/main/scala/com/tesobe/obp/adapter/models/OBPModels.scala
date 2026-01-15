@@ -27,7 +27,6 @@ import io.circe.generic.semiauto._
  * Message received from OBP-API via RabbitMQ
  */
 case class OutboundMessage(
-  messageType: String,
   outboundAdapterCallContext: OutboundAdapterCallContext,
   data: JsonObject
 )

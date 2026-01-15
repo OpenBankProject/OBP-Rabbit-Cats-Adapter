@@ -59,7 +59,7 @@ object RabbitMQConsumer {
           _ <- client.consumeMessages(
             channel,
             config.queue.requestQueue,
-            message => processMessage(client, channel, message, config, connector, telemetry)
+            (message, routingKey) => processMessage(client, channel, message, routingKey, config, connector, telemetry)
           )
           
         } yield ()
@@ -79,6 +79,7 @@ object RabbitMQConsumer {
     client: RabbitMQClient,
     channel: com.rabbitmq.client.Channel,
     messageJson: String,
+    messageType: String,
     config: AdapterConfig,
     connector: CBSConnector,
     telemetry: Telemetry
@@ -90,7 +91,7 @@ object RabbitMQConsumer {
       outboundMsg <- parseOutboundMessage(messageJson)
       
       _ <- telemetry.recordMessageReceived(
-        outboundMsg.messageType,
+        messageType,
         outboundMsg.outboundAdapterCallContext.correlationId,
         config.queue.requestQueue
       )
@@ -99,11 +100,11 @@ object RabbitMQConsumer {
       callContext = CallContext.fromOutbound(outboundMsg)
       
       // Log message processing
-      _ <- IO.println(s"[${callContext.correlationId}] Processing: ${outboundMsg.messageType}")
+      _ <- IO.println(s"[${callContext.correlationId}] Processing: $messageType")
       
       // Call CBS connector - use handleMessage method
       cbsResponse <- connector.handleMessage(
-        outboundMsg.messageType,
+        messageType,
         outboundMsg.data,
         callContext
       )
@@ -117,7 +118,7 @@ object RabbitMQConsumer {
       // Record success
       duration = (System.currentTimeMillis() - startTime).millis
       _ <- telemetry.recordMessageProcessed(
-        outboundMsg.messageType,
+        messageType,
         callContext.correlationId,
         duration
       )

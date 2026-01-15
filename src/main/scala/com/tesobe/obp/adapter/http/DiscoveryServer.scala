@@ -95,14 +95,18 @@ object DiscoveryServer {
     // Test message endpoint
     case POST -> Root / "test" / "adapter-info" =>
       sendTestMessage(config, "obp.getAdapterInfo").flatMap {
-        case Right(correlationId) =>
-          Ok(s"""{
-            |  "status": "success",
-            |  "message": "Test message sent to RabbitMQ",
-            |  "messageType": "obp.getAdapterInfo",
-            |  "correlationId": "$correlationId",
-            |  "queue": "${config.queue.requestQueue}"
-            |}""".stripMargin)
+        case Right((correlationId, outboundMessage)) =>
+          import io.circe.syntax._
+          import io.circe.JsonObject
+          val response = JsonObject(
+            "status" -> "success".asJson,
+            "message" -> "Test message sent to RabbitMQ".asJson,
+            "messageType" -> "obp.getAdapterInfo".asJson,
+            "correlationId" -> correlationId.asJson,
+            "queue" -> config.queue.requestQueue.asJson,
+            "outboundMessage" -> outboundMessage.asJson
+          ).asJson.noSpaces
+          Ok(response)
             .map(_.withContentType(`Content-Type`(MediaType.application.json)))
         case Left(error) =>
           InternalServerError(s"""{
@@ -124,12 +128,25 @@ object DiscoveryServer {
             |}""".stripMargin)
             .map(_.withContentType(`Content-Type`(MediaType.application.json)))
       }
+    
+    // Get message schema from OBP message docs
+    case GET -> Root / "test" / "schema" / messageType =>
+      fetchMessageSchema(config, messageType).flatMap {
+        case Right(schema) =>
+          Ok(schema).map(_.withContentType(`Content-Type`(MediaType.application.json)))
+        case Left(error) =>
+          InternalServerError(s"""{
+            |  "status": "error",
+            |  "message": "$error"
+            |}""".stripMargin)
+            .map(_.withContentType(`Content-Type`(MediaType.application.json)))
+      }
   }
 
   /**
    * Send a test message to RabbitMQ
    */
-  private def sendTestMessage(config: AdapterConfig, messageType: String): IO[Either[String, String]] = {
+  private def sendTestMessage(config: AdapterConfig, messageType: String): IO[Either[String, (String, String)]] = {
     import java.util.UUID
     import io.circe.syntax._
     import io.circe.JsonObject
@@ -141,27 +158,74 @@ object DiscoveryServer {
       case Some(client) =>
         val correlationId = UUID.randomUUID().toString
         val testMessage = JsonObject(
-          "messageType" -> messageType.asJson,
           "data" -> JsonObject.empty.asJson,
           "outboundAdapterCallContext" -> JsonObject(
             "correlationId" -> correlationId.asJson,
             "sessionId" -> "test-session".asJson,
-            "generalContext" -> List.empty[String].asJson
+            "consumerId" -> None.asJson,
+            "generalContext" -> None.asJson,
+            "outboundAdapterAuthInfo" -> None.asJson,
+            "outboundAdapterConsenterInfo" -> None.asJson
           ).asJson
         ).asJson.noSpaces
-        
-        // Actually publish to RabbitMQ
         client.createConnection.use { connection =>
           client.createChannel(connection).use { channel =>
             for {
               _ <- client.declareQueue(channel, config.queue.requestQueue)
-              _ <- client.publishMessage(channel, config.queue.requestQueue, testMessage)
-              _ <- IO.println(s"[TEST] Sent message: $messageType with correlation ID: $correlationId")
-            } yield Right(correlationId)
+              _ <- client.publishMessage(channel, config.queue.requestQueue, testMessage, Some(messageType))
+              _ <- IO.println(s"[TEST] Sent message: $messageType (routing key) with correlation ID: $correlationId")
+            } yield Right((correlationId, testMessage))
           }
         }.handleErrorWith { error =>
           IO.pure(Left(s"Failed to publish message: ${error.getMessage}"))
         }
+    }
+  }
+
+  /**
+   * Fetch message schema from OBP message docs endpoint
+   */
+  private def fetchMessageSchema(config: AdapterConfig, messageType: String): IO[Either[String, String]] = {
+    import org.http4s.client.Client
+    import org.http4s.ember.client.EmberClientBuilder
+    import io.circe.parser._
+    import io.circe.syntax._
+    
+    val docsUrl = s"${config.http.obpApiUrl}/obp/v6.0.0/message-docs/rabbitmq_vOct2024"
+    
+    EmberClientBuilder.default[IO].build.use { client =>
+      client.expect[String](docsUrl).flatMap { jsonStr =>
+        decode[io.circe.Json](jsonStr) match {
+          case Right(json) =>
+            // Extract the specific message type from the docs
+            val messagesOpt = json.hcursor.downField("message_docs").focus
+            
+            messagesOpt match {
+              case Some(messagesJson) =>
+                val messageList = messagesJson.asArray.getOrElse(Vector.empty)
+                val messageOpt = messageList.find { msg =>
+                  msg.hcursor.downField("process").as[String].toOption.contains(messageType)
+                }
+                
+                messageOpt match {
+                  case Some(msgSchema) =>
+                    val result = io.circe.JsonObject(
+                      "messageType" -> messageType.asJson,
+                      "outboundExample" -> msgSchema.hcursor.downField("example_outbound_message").focus.getOrElse(io.circe.Json.Null),
+                      "inboundExample" -> msgSchema.hcursor.downField("example_inbound_message").focus.getOrElse(io.circe.Json.Null),
+                      "description" -> msgSchema.hcursor.downField("description").as[String].getOrElse("").asJson
+                    ).asJson.noSpaces
+                    IO.pure(Right(result))
+                  case None =>
+                    IO.pure(Left(s"Message type '$messageType' not found in message docs"))
+                }
+              case None =>
+                IO.pure(Left("No message_docs field found in response"))
+            }
+        }
+      }
+    }.handleErrorWith { error =>
+      IO.pure(Left(s"Failed to fetch message docs: ${error.getMessage}"))
     }
   }
 
@@ -236,6 +300,9 @@ object DiscoveryServer {
        |        .card:hover {
        |            transform: translateY(-4px);
        |            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+       |        }
+       |        .card-full {
+       |            grid-column: 1 / -1;
        |        }
        |        .card h2 {
        |            color: #667eea;
@@ -316,134 +383,133 @@ object DiscoveryServer {
        |        </header>
        |
        |        <div class="grid">
-       |            <!-- Health & Status -->
-       |            <div class="card">
-       |                <h2>Health & Status</h2>
-       |                <ul class="link-list">
-       |                    <li><a href="$serverUrl/health">Health Check</a></li>
-                    <li><a href="$serverUrl/metrics">Prometheus Metrics</a></li>
-       |                    <li><a href="$serverUrl/ready">Readiness Check</a></li>
-       |                    <li><a href="$serverUrl/info">Service Info (JSON)</a></li>
-       |                </ul>
+       |            <!-- Health, Observability, Documentation & Quick Info -->
+       |            <div class="card card-full">
+       |                <h2>Health, Observability & Documentation</h2>
+       |                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+       |                    <div>
+       |                        <ul class="link-list">
+       |                            <li><a href="$serverUrl/health">Health Check</a></li>
+       |                            <li><a href="$serverUrl/ready">Readiness Check</a></li>
+       |                            <li><a href="$serverUrl/metrics">Prometheus Metrics</a></li>
+       |                            <li><a href="$serverUrl/info">Service Info (JSON)</a></li>
+       |                            <li><a href="${config.http.apiExplorerUrl}/message-docs/rabbitmq_vOct2024" class="external-link">API Explorer</a></li>
+       |                            <li><a href="${config.http.obpApiUrl}/obp/v6.0.0/message-docs/rabbitmq_vOct2024" class="external-link">Message Docs (API)</a></li>
+       |                        </ul>
+       |                        <p style="margin-top: 1rem; padding: 1rem; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px; color: #92400e; font-size: 0.9rem;">
+       |                            <strong>Source of Truth:</strong> The <a href="${config.http.obpApiUrl}/obp/v6.0.0/message-docs/rabbitmq_vOct2024" style="color: #92400e; text-decoration: underline;">Message Docs (API)</a> endpoint is the canonical reference for all RabbitMQ message formats.
+       |                        </p>
+       |                    </div>
+       |                    <div>
+       |                        <h3 style="color: #667eea; font-size: 1.2rem; margin-bottom: 1rem;">Quick Info</h3>
+       |                        <table class="info-table">
+       |                            <tr>
+       |                                <td>Version:</td>
+       |                                <td><code>1.0.0-SNAPSHOT</code></td>
+       |                            </tr>
+       |                            <tr>
+       |                                <td>HTTP Server:</td>
+       |                                <td><code>${config.http.host}:${config.http.port}</code></td>
+       |                            </tr>
+       |                            <tr>
+       |                                <td>Prefetch Count:</td>
+       |                                <td><code>${config.queue.prefetchCount}</code></td>
+       |                            </tr>
+       |                            <tr>
+       |                                <td>Metrics:</td>
+       |                                <td>${if (config.enableMetrics) "[Enabled]" else "[Disabled]"}</td>
+       |                            </tr>
+       |                            <tr>
+       |                                <td>Log Level:</td>
+       |                                <td><code>${config.logLevel}</code></td>
+       |                            </tr>
+       |                        </table>
+       |                    </div>
+       |                </div>
        |            </div>
        |
-       |            <!-- RabbitMQ -->
-       |            <div class="card">
-       |                <h2>RabbitMQ</h2>
-       |                <ul class="link-list">
-       |                    <li><a href="$rabbitmqManagementUrl" class="external-link">Management UI</a></li>
-       |                </ul>
-       |                <table class="info-table">
-       |                    <tr>
-       |                        <td>Host:</td>
-       |                        <td><code>${config.rabbitmq.host}:${config.rabbitmq.port}</code></td>
-       |                    </tr>
-       |                    <tr>
-       |                        <td>Request Queue:</td>
-       |                        <td><code>${config.queue.requestQueue}</code></td>
-       |                    </tr>
-       |                    <tr>
-       |                        <td>Response Queue:</td>
-       |                        <td><code>${config.queue.responseQueue}</code></td>
-       |                    </tr>
-       |                </table>
-       |            </div>
-       |
-       |            <!-- Observability -->
-       |            <div class="card">
-       |                <h2>Observability</h2>
-       |                <table class="info-table">
-       |                    <tr>
-       |                        <td>Metrics:</td>
-       |                        <td>${if (config.enableMetrics) "[Enabled]" else "[Disabled]"}</td>
-       |                    </tr>
-       |                    <tr>
-       |                        <td>Log Level:</td>
-       |                        <td><code>${config.logLevel}</code></td>
-       |                    </tr>
-       |                </table>
-       |                <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
-       |                    Note: OpenTelemetry metrics are logged via the telemetry interface
-       |                </p>
-                <ul class="link-list" style="margin-top: 0.5rem;">
-                    <li><a href="$serverUrl/metrics">Prometheus Metrics</a></li>
-                </ul>
-       |            </div>
-       |
-       |            <!-- CBS Configuration -->
-       |            <div class="card">
-       |                <h2>Core Banking System</h2>
-       |                <table class="info-table">
-       |                    <tr>
-       |                        <td>Base URL:</td>
-       |                        <td><code>${config.cbs.baseUrl}</code></td>
-       |                    </tr>
-       |                    <tr>
-       |                        <td>Auth Type:</td>
-       |                        <td><code>${config.cbs.authType}</code></td>
-       |                    </tr>
-       |                    <tr>
-       |                        <td>Timeout:</td>
-       |                        <td><code>${config.cbs.timeout.toSeconds}s</code></td>
-       |                    </tr>
-       |                    <tr>
-       |                        <td>Max Retries:</td>
-       |                        <td><code>${config.cbs.maxRetries}</code></td>
-       |                    </tr>
-       |                </table>
-       |            </div>
-       |
-       |            <!-- Documentation -->
-       |            <div class="card">
-       |                <h2>Documentation</h2>
-       |                <ul class="link-list">
-       |                    <li><a href="${config.http.apiExplorerUrl}/message-docs/rabbitmq_vOct2024" class="external-link">API Explorer</a></li>
-       |                    <li><a href="${config.http.obpApiUrl}/obp/v6.0.0/message-docs/rabbitmq_vOct2024" class="external-link">Message Docs (API)</a></li>
-       |                </ul>
-       |                <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
-       |                    Check the README and ARCHITECTURE.md in your project
-       |                </p>
-       |            </div>
-       |
-       |            <!-- Quick Actions -->
-       |            <div class="card">
-       |                <h2>Quick Info</h2>
-       |                <table class="info-table">
-       |                    <tr>
-       |                        <td>Version:</td>
-       |                        <td><code>1.0.0-SNAPSHOT</code></td>
-       |                    </tr>
-       |                    <tr>
-       |                        <td>HTTP Server:</td>
-       |                        <td><code>${config.http.host}:${config.http.port}</code></td>
-       |                    </tr>
-       |                    <tr>
-       |                        <td>Prefetch Count:</td>
-       |                        <td><code>${config.queue.prefetchCount}</code></td>
-       |                    </tr>
-       |                </table>
-       |            </div>
-       |        </div>
-
-            <!-- Test Messages -->
-            <div class="card">
-                <h2>Test Messages</h2>
-                <p style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
-                    Send test messages to RabbitMQ to verify the adapter is working
-                </p>
-                <button onclick="sendTestMessage()" style="
-                    background: #667eea;
-                    color: white;
-                    border: none;
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 6px;
-                    font-size: 1rem;
-                    cursor: pointer;
-                    width: 100%;
-                    transition: background 0.2s;
-                " onmouseover="this.style.background='#5568d3'" onmouseout="this.style.background='#667eea'">
-                    Send Get Adapter Info
-                </button>
+       |            <!-- Test Messages -->
+       |            <div class="card card-full">
+                <!-- Test Messages -->
+                <div class="card card-full">
+                    <h2>Test Messages</h2>
+                    <p style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
+                        Send test messages to RabbitMQ to verify the adapter is working
+                    </p>
+                
+                    <!-- Expected Message Format -->
+                    <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;">
+                        <h3 style="color: #667eea; font-size: 1.1rem; margin-bottom: 1rem;">Expected Message Format (from Message Docs)</h3>
+                    
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color: #374151; display: block; margin-bottom: 0.5rem;">Description:</strong>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin: 0; line-height: 1.5;">
+                                Get Adapter Info - Returns information about the adapter including name, version, and git commit details
+                            </p>
+                        </div>
+                    
+                        <details style="margin-bottom: 1rem;">
+                            <summary style="cursor: pointer; font-weight: bold; color: #374151; padding: 0.5rem; background: white; border-radius: 4px; border: 1px solid #e5e7eb;">Expected Outbound</summary>
+                            <pre style="margin: 0.75rem 0 0 0; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word; overflow-x: auto; background: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 4px; line-height: 1.4;">{
+      "messageFormat": "OutboundAdapterCallContext",
+      "outboundAdapterCallContext": {
+        "correlationId": "string",
+        "sessionId": "string",
+        "consumerId": "string",
+        "generalContext": [],
+        "outboundAdapterAuthInfo": {
+          "userId": "string",
+          "username": "string",
+          "linkedCustomers": [],
+          "userAuthContext": [],
+          "authViews": []
+        }
+      },
+      "adapterInfo": {
+        "name": "string",
+        "version": "string",
+        "git_commit": "string",
+        "date": "string"
+      }
+    }</pre>
+                        </details>
+                    
+                        <details>
+                            <summary style="cursor: pointer; font-weight: bold; color: #374151; padding: 0.5rem; background: white; border-radius: 4px; border: 1px solid #e5e7eb;">Expected Inbound</summary>
+                            <pre style="margin: 0.75rem 0 0 0; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word; overflow-x: auto; background: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 4px; line-height: 1.4;">{
+      "data": {
+        "name": "string",
+        "version": "string",
+        "git_commit": "string",
+        "date": "string"
+      },
+      "inboundAdapterCallContext": {
+        "correlationId": "string",
+        "sessionId": "string",
+        "generalContext": []
+      },
+      "status": {
+        "errorCode": "string",
+        "backendMessages": []
+      }
+    }</pre>
+                        </details>
+                    </div>
+                
+                    <button onclick="sendTestMessage()" style="
+                        background: #667eea;
+                        color: white;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 6px;
+                        font-size: 1rem;
+                        cursor: pointer;
+                        width: 100%;
+                        transition: background 0.2s;
+                    " onmouseover="this.style.background='#5568d3'" onmouseout="this.style.background='#667eea'">
+                        Send Get Adapter Info
+                    </button>
+                
                 <div id="test-result" style="
                     margin-top: 1rem;
                     padding: 0.75rem;
@@ -452,6 +518,7 @@ object DiscoveryServer {
                     font-size: 0.9rem;
                 "></div>
             </div>
+       |        </div>
        |
        |        <footer>
        |            <p>OBP Rabbit Cats Adapter - Built with Scala, Cats Effect & fs2-rabbit</p>
@@ -483,12 +550,18 @@ object DiscoveryServer {
                         resultDiv.style.background = '#d1fae5';
                         resultDiv.style.color = '#065f46';
                         resultDiv.innerHTML = `
-                            <strong>Success!</strong><br>
-                            Message Type: $${data.messageType}<br>
-                            Correlation ID: $${data.correlationId}<br>
-                            Queue: $${data.queue}<br>
-                            <em style="font-size: 0.85rem; margin-top: 0.5rem; display: block;">
-                                Waiting for response...
+                            <strong>Outbound Message Sent:</strong><br>
+                            <div style="margin-top: 0.5rem; padding: 0.5rem; background: white; border-radius: 4px; color: #333;">
+                                <strong>Message Type:</strong> $${data.messageType}<br>
+                                <strong>Correlation ID:</strong> $${data.correlationId}<br>
+                                <strong>Queue:</strong> $${data.queue}<br>
+                                <details style="margin-top: 0.5rem;">
+                                    <summary style="cursor: pointer; color: #667eea;">Show Outbound JSON</summary>
+                                    <pre style="margin: 0.5rem 0; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word; overflow-x: auto;">$${JSON.stringify(JSON.parse(data.outboundMessage), null, 2)}</pre>
+                                </details>
+                            </div>
+                            <em style="font-size: 0.85rem; margin-top: 0.5rem; display: block; color: #065f46;">
+                                Waiting for inbound response...
                             </em>
                         `;
                         
@@ -518,14 +591,18 @@ object DiscoveryServer {
                             const responseData = await response.json();
                             resultDiv.innerHTML += `
                                 <hr style="margin: 1rem 0; border: none; border-top: 1px solid #065f46;">
-                                <strong>Response Received!</strong><br>
+                                <strong>Inbound Message Received:</strong><br>
                                 <div style="margin-top: 0.5rem; padding: 0.5rem; background: white; border-radius: 4px; color: #333;">
-                                    <strong>Data:</strong><br>
-                                    <pre style="margin: 0.5rem 0; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word;">$${JSON.stringify(responseData.data, null, 2)}</pre>
-                                </div>
-                                <div style="margin-top: 0.5rem; font-size: 0.85rem;">
                                     <strong>Status:</strong> $${responseData.status.errorCode || 'SUCCESS'}<br>
-                                    <strong>Correlation ID:</strong> $${responseData.inboundAdapterCallContext.correlationId}
+                                    <strong>Correlation ID:</strong> $${responseData.inboundAdapterCallContext.correlationId}<br>
+                                    <details style="margin-top: 0.5rem;">
+                                        <summary style="cursor: pointer; color: #667eea;">Show Inbound JSON</summary>
+                                        <pre style="margin: 0.5rem 0; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word; overflow-x: auto;">$${JSON.stringify(responseData, null, 2)}</pre>
+                                    </details>
+                                    <details style="margin-top: 0.5rem;">
+                                        <summary style="cursor: pointer; color: #667eea;">Show Data Only</summary>
+                                        <pre style="margin: 0.5rem 0; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word; overflow-x: auto;">$${JSON.stringify(responseData.data, null, 2)}</pre>
+                                    </details>
                                 </div>
                             `;
                         } else if (attempts < maxAttempts) {
@@ -554,6 +631,7 @@ object DiscoveryServer {
                 
                 poll();
             }
+
         </script>
        |</html>""".stripMargin
   }
