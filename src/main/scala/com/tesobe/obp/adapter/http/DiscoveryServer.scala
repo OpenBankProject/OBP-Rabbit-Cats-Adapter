@@ -158,15 +158,21 @@ object DiscoveryServer {
       case Some(client) =>
         val correlationId = UUID.randomUUID().toString
         val testMessage = JsonObject(
-          "data" -> JsonObject.empty.asJson,
           "outboundAdapterCallContext" -> JsonObject(
             "correlationId" -> correlationId.asJson,
             "sessionId" -> "test-session".asJson,
-            "consumerId" -> None.asJson,
-            "generalContext" -> None.asJson,
-            "outboundAdapterAuthInfo" -> None.asJson,
+            "consumerId" -> "test-consumer".asJson,
+            "generalContext" -> List.empty[String].asJson,
+            "outboundAdapterAuthInfo" -> JsonObject(
+              "userId" -> "test-user".asJson,
+              "username" -> "test-username".asJson,
+              "linkedCustomers" -> List.empty[String].asJson,
+              "userAuthContext" -> List.empty[String].asJson,
+              "authViews" -> List.empty[String].asJson
+            ).asJson,
             "outboundAdapterConsenterInfo" -> None.asJson
-          ).asJson
+          ).asJson,
+          "data" -> JsonObject.empty.asJson
         ).asJson.noSpaces
         client.createConnection.use { connection =>
           client.createChannel(connection).use { channel =>
@@ -393,12 +399,11 @@ object DiscoveryServer {
        |                            <li><a href="$serverUrl/ready">Readiness Check</a></li>
        |                            <li><a href="$serverUrl/metrics">Prometheus Metrics</a></li>
        |                            <li><a href="$serverUrl/info">Service Info (JSON)</a></li>
+       |                            <li><a href="$rabbitmqManagementUrl" class="external-link">RabbitMQ Management</a></li>
        |                            <li><a href="${config.http.apiExplorerUrl}/message-docs/rabbitmq_vOct2024" class="external-link">API Explorer</a></li>
-       |                            <li><a href="${config.http.obpApiUrl}/obp/v6.0.0/message-docs/rabbitmq_vOct2024" class="external-link">Message Docs (API)</a></li>
+       |                            <li><a href="${config.http.obpApiUrl}/obp/v6.0.0/message-docs/rabbitmq_vOct2024" class="external-link">Message Docs (API) (Source of Truth)</a></li>
        |                        </ul>
-       |                        <p style="margin-top: 1rem; padding: 1rem; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px; color: #92400e; font-size: 0.9rem;">
-       |                            <strong>Source of Truth:</strong> The <a href="${config.http.obpApiUrl}/obp/v6.0.0/message-docs/rabbitmq_vOct2024" style="color: #92400e; text-decoration: underline;">Message Docs (API)</a> endpoint is the canonical reference for all RabbitMQ message formats.
-       |                        </p>
+
        |                    </div>
        |                    <div>
        |                        <h3 style="color: #667eea; font-size: 1.2rem; margin-bottom: 1rem;">Quick Info</h3>
@@ -451,7 +456,6 @@ object DiscoveryServer {
                         <details style="margin-bottom: 1rem;">
                             <summary style="cursor: pointer; font-weight: bold; color: #374151; padding: 0.5rem; background: white; border-radius: 4px; border: 1px solid #e5e7eb;">Expected Outbound</summary>
                             <pre style="margin: 0.75rem 0 0 0; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word; overflow-x: auto; background: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 4px; line-height: 1.4;">{
-      "messageFormat": "OutboundAdapterCallContext",
       "outboundAdapterCallContext": {
         "correlationId": "string",
         "sessionId": "string",
@@ -463,14 +467,16 @@ object DiscoveryServer {
           "linkedCustomers": [],
           "userAuthContext": [],
           "authViews": []
+        },
+        "outboundAdapterConsenterInfo": {
+          "userId": "string",
+          "username": "string",
+          "linkedCustomers": [],
+          "userAuthContext": [],
+          "authViews": []
         }
       },
-      "adapterInfo": {
-        "name": "string",
-        "version": "string",
-        "git_commit": "string",
-        "date": "string"
-      }
+      "data": {}
     }</pre>
                         </details>
 
@@ -531,7 +537,6 @@ object DiscoveryServer {
         <script>
             // Expected message schemas
             const expectedOutbound = {
-                "messageFormat": "OutboundAdapterCallContext",
                 "outboundAdapterCallContext": {
                     "correlationId": "string",
                     "sessionId": "string",
@@ -543,14 +548,10 @@ object DiscoveryServer {
                         "linkedCustomers": [],
                         "userAuthContext": [],
                         "authViews": []
-                    }
+                    },
+                    "outboundAdapterConsenterInfo": "object"
                 },
-                "adapterInfo": {
-                    "name": "string",
-                    "version": "string",
-                    "git_commit": "string",
-                    "date": "string"
-                }
+                "data": "object"
             };
 
             const expectedInbound = {
@@ -572,9 +573,10 @@ object DiscoveryServer {
             };
 
             // Generate diff HTML between actual and expected objects
-            function generateDiff(actual, expected) {
+            function generateDiff(actual, expected, messageContext) {
                 let diffHtml = '';
                 let stats = { matches: 0, issues: 0, extra: 0 };
+                const contextPrefix = 'In ' + messageContext + ': ';
 
                 function isTypePlaceholder(expectedVal, actualVal) {
                     if (expectedVal === "string" && typeof actualVal === "string") return true;
@@ -596,17 +598,17 @@ object DiscoveryServer {
 
                         if (expectedVal === undefined) {
                             stats.extra++;
-                            html += '<div style="background: #dbeafe; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #3b82f6;">+ ' + currentPath + ': ' + JSON.stringify(actualVal) + ' (extra field)</div>';
+                            html += '<div style="background: #dbeafe; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #3b82f6;">+ ' + contextPrefix + currentPath + ': ' + JSON.stringify(actualVal) + ' (extra field)</div>';
                         } else if (actualVal === undefined) {
                             stats.issues++;
-                            html += '<div style="background: #fee2e2; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #dc2626;">✗ ' + currentPath + ' is missing (expected type: ' + (typeof expectedVal === 'object' ? 'object' : expectedVal) + ')</div>';
+                            html += '<div style="background: #fee2e2; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #dc2626;">✗ ' + contextPrefix + currentPath + ' is missing (expected type: ' + (typeof expectedVal === 'object' ? 'object' : expectedVal) + ')</div>';
                         } else if (isTypePlaceholder(expectedVal, actualVal)) {
                             stats.matches++;
                         } else if (typeof actualVal === 'object' && actualVal !== null && typeof expectedVal === 'object' && expectedVal !== null && !Array.isArray(actualVal)) {
                             html += diffRecursive(actualVal, expectedVal, currentPath);
                         } else if (expectedVal !== actualVal) {
                             stats.issues++;
-                            html += '<div style="background: #fef3c7; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #f59e0b;">⚠ ' + currentPath + ': got "' + actualVal + '", expected "' + expectedVal + '"</div>';
+                            html += '<div style="background: #fef3c7; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #f59e0b;">⚠ ' + contextPrefix + currentPath + ': got "' + actualVal + '", expected "' + expectedVal + '"</div>';
                         } else {
                             stats.matches++;
                         }
@@ -659,7 +661,7 @@ object DiscoveryServer {
                                 <details style="margin-top: 0.5rem;">
                                     <summary style="cursor: pointer; color: #667eea; font-weight: bold;">Show Diff (Actual vs Expected)</summary>
                                     <div style="margin: 0.5rem 0; font-size: 0.85rem; font-family: monospace;">
-                                        $${generateDiff(JSON.parse(data.outboundMessage), expectedOutbound)}
+                                        $${generateDiff(JSON.parse(data.outboundMessage), expectedOutbound, 'outbound message')}
                                     </div>
                                 </details>
                             </div>
@@ -711,7 +713,7 @@ object DiscoveryServer {
                                     <details style="margin-top: 0.5rem;">
                                         <summary style="cursor: pointer; color: #667eea; font-weight: bold;">Show Diff (Actual vs Expected)</summary>
                                         <div style="margin: 0.5rem 0; font-size: 0.85rem; font-family: monospace;">
-                                            $${generateDiff(responseData, expectedInbound)}
+                                            $${generateDiff(responseData, expectedInbound, 'inbound message')}
                                         </div>
                                     </details>
                                 </div>
