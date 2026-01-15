@@ -545,11 +545,22 @@ object DiscoveryServer {
                 const contextPrefix = 'In ' + messageContext + ': ';
 
                 function isTypePlaceholder(expectedVal, actualVal) {
-                    if (expectedVal === "string" && typeof actualVal === "string") return true;
-                    if (expectedVal === "number" && typeof actualVal === "number") return true;
-                    if (expectedVal === "boolean" && typeof actualVal === "boolean") return true;
-                    if (expectedVal === "object" && (typeof actualVal === "object" || actualVal === null)) return true;
-                    if (Array.isArray(expectedVal) && expectedVal.length === 0 && (Array.isArray(actualVal) || actualVal === null)) return true;
+                    // Check if both are the same type (type matching, not value matching)
+                    if (typeof expectedVal === "string" && typeof actualVal === "string") return true;
+                    if (typeof expectedVal === "number" && typeof actualVal === "number") return true;
+                    if (typeof expectedVal === "boolean" && typeof actualVal === "boolean") return true;
+
+                    // Handle arrays - both should be arrays or both can be null
+                    if (Array.isArray(expectedVal) && (Array.isArray(actualVal) || actualVal === null)) return true;
+                    if (Array.isArray(actualVal) && (Array.isArray(expectedVal) || expectedVal === null)) return true;
+
+                    // Handle objects (but not arrays) - both should be objects or can be null
+                    if (typeof expectedVal === "object" && !Array.isArray(expectedVal) && expectedVal !== null &&
+                        typeof actualVal === "object" && !Array.isArray(actualVal)) return true;
+
+                    // Handle null values
+                    if (expectedVal === null && actualVal === null) return true;
+
                     return false;
                 }
 
