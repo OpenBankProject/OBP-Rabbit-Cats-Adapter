@@ -16,17 +16,17 @@ import com.tesobe.obp.adapter.telemetry.ConsoleTelemetry
 object AdapterMain extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] = {
-    val banner = 
+    val banner =
       """
         |===============================================================
-        |     OBP Rabbit Cats Adapter                              
-        |     Version 1.0.0-SNAPSHOT                               
+        |     OBP Rabbit Cats Adapter
+        |     Version 1.0.0-SNAPSHOT
         |===============================================================
         |""".stripMargin
-    
+
     for {
       _ <- IO.println(banner)
-      
+
       // Load configuration
       _ <- IO.println("[CONFIG] Loading configuration...")
       config <- Config.load
@@ -35,26 +35,25 @@ object AdapterMain extends IOApp {
       _ <- IO.println(s"   RabbitMQ: ${config.rabbitmq.host}:${config.rabbitmq.port}")
       _ <- IO.println(s"   Request Queue: ${config.queue.requestQueue}")
       _ <- IO.println(s"   Response Queue: ${config.queue.responseQueue}")
-      _ <- IO.println(s"   CBS Base URL: ${config.cbs.baseUrl}")
       _ <- IO.println("")
-      
+
       // Validate configuration
       _ <- IO.println("[CONFIG] Validating configuration...")
       _ <- Config.validate(config)
       _ <- IO.println("[OK] Configuration valid")
       _ <- IO.println("")
-      
+
       // Create telemetry
       telemetry = new ConsoleTelemetry()
       _ <- IO.println("[TELEMETRY] Initialized (Console mode)")
       _ <- IO.println("")
-      
+
       // Create CBS connector
       _ <- IO.println("[CBS] Initializing CBS connector...")
       connector = new MockCBSConnector(telemetry)
       _ <- IO.println(s"[OK] CBS Connector: ${connector.name} v${connector.version}")
       _ <- IO.println("")
-      
+
       // Test CBS health
       _ <- IO.println("[HEALTH] Checking CBS health...")
       healthResult <- connector.checkHealth(
@@ -74,15 +73,15 @@ object AdapterMain extends IOApp {
           IO.println(s"[WARNING] CBS health check failed: $code - $msg")
       }
       _ <- IO.println("")
-      
+
       // Initialize RabbitMQ client for test messages
       rabbitClient = RabbitMQClient(config)
       _ <- IO(DiscoveryServer.setRabbitClient(rabbitClient))
-      
+
       // Start HTTP discovery server and RabbitMQ consumer concurrently
       _ <- IO.println("[STARTUP] Starting services...")
       _ <- IO.println("")
-      
+
       exitCode <- (
         if (config.http.enabled) {
           DiscoveryServer.start(config).use { server =>
@@ -101,7 +100,7 @@ object AdapterMain extends IOApp {
         IO(error.printStackTrace()) *>
         IO.pure(ExitCode.Error)
       }
-      
+
     } yield exitCode
   }
 }

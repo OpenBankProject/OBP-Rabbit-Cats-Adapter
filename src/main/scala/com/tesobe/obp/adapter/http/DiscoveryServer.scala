@@ -760,12 +760,6 @@ object DiscoveryServer {
        |    "responseQueue": "${config.queue.responseQueue}",
        |    "prefetchCount": ${config.queue.prefetchCount}
        |  },
-       |  "cbs": {
-       |    "baseUrl": "${config.cbs.baseUrl}",
-       |    "authType": "${config.cbs.authType}",
-       |    "timeout": "${config.cbs.timeout.toSeconds}s",
-       |    "maxRetries": ${config.cbs.maxRetries}
-       |  },
        |  "observability": {
        |    "metricsEnabled": ${config.enableMetrics},
        |    "logLevel": "${config.logLevel}"

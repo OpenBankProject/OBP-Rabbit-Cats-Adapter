@@ -14,6 +14,7 @@ OBP-API ←→ RabbitMQ ←→ This Adapter ←→ Your CBS (REST/SOAP/etc)
 ```
 
 **Key Features**:
+
 - 🔌 **Plugin Architecture**: Implement one interface, get full OBP integration
 - 📊 **Built-in Telemetry**: Metrics, logging, and tracing out of the box
 - 🎯 **Type-Safe**: Leverages Scala's type system to catch errors at compile time
@@ -26,16 +27,19 @@ OBP-API ←→ RabbitMQ ←→ This Adapter ←→ Your CBS (REST/SOAP/etc)
 This adapter cleanly separates three concerns:
 
 ### 1. **North Side** (Generic, Reusable)
+
 - RabbitMQ message consumption/production
 - OBP message parsing and routing
 - Message correlation and context tracking
 
 ### 2. **South Side** (Bank-Specific, Pluggable)
+
 - CBS connector implementations
 - Your bank's API integration
 - Data mapping between CBS and OBP models
 
 ### 3. **Cross-Cutting** (Observability)
+
 - Telemetry interface
 - Metrics collection
 - Distributed tracing
@@ -46,6 +50,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed documentation.
 ## How to Use This Adapter
 
 **Banks:** Read **[HOW-BANKS-USE-THIS.md](HOW-BANKS-USE-THIS.md)** first! This explains:
+
 - ✅ The correct way to use this adapter (as a dependency)
 - ❌ The wrong way (cloning and modifying)
 - 📦 Maven dependency vs Docker base image vs Git submodule
@@ -105,21 +110,21 @@ class YourBankConnector(
   apiKey: String,
   telemetry: Telemetry
 ) extends CBSConnector {
-  
+
   override def name: String = "YourBank-Connector"
   override def version: String = "1.0.0"
-  
+
   override def getBank(bankId: String, callContext: CallContext): IO[CBSResponse[BankCommons]] = {
     // Your implementation here
     // Call your CBS API, map response to BankCommons
     ???
   }
-  
+
   override def getBankAccount(...): IO[CBSResponse[BankAccountCommons]] = {
     // Your implementation
     ???
   }
-  
+
   // Implement ~30 methods for full OBP functionality
   // See interfaces/CBSConnector.scala for complete interface
 }
@@ -178,24 +183,28 @@ http://localhost:8080
 ```
 
 The discovery page shows:
-- **🏥 **Health & Status** - Health check and readiness endpoints
+
+- **🏥 **Health & Status\*\* - Health check and readiness endpoints
 - 🐰 **RabbitMQ** - Connection info and management UI link
 - 📊 **Observability** - Metrics and logging configuration
 - 🏛️ **CBS Configuration** - Core Banking System settings
 - 📚 **Documentation** - Links to OBP resources
 
 **Available Endpoints:**
+
 - `GET /` - Discovery page (HTML)
 - `GET /health` - Health check (JSON)
 - `GET /ready` - Readiness check (JSON)
 - `GET /info` - Service info (JSON)
 
 Example health check:
+
 ```bash
 curl http://localhost:8080/health
 ```
 
 Response:
+
 ```json
 {
   "status": "healthy",
@@ -214,21 +223,21 @@ trait CBSConnector {
   // Bank Operations
   def getBank(bankId: String, ...): IO[CBSResponse[BankCommons]]
   def getBanks(...): IO[CBSResponse[List[BankCommons]]]
-  
+
   // Account Operations
   def getBankAccount(bankId: String, accountId: String, ...): IO[CBSResponse[BankAccountCommons]]
   def getBankAccounts(...): IO[CBSResponse[List[BankAccountCommons]]]
   def createBankAccount(...): IO[CBSResponse[BankAccountCommons]]
-  
+
   // Transaction Operations
   def getTransaction(...): IO[CBSResponse[TransactionCommons]]
   def getTransactions(...): IO[CBSResponse[List[TransactionCommons]]]
   def makePayment(...): IO[CBSResponse[TransactionCommons]]
-  
+
   // Customer Operations
   def getCustomer(...): IO[CBSResponse[CustomerCommons]]
   def createCustomer(...): IO[CBSResponse[CustomerCommons]]
-  
+
   // ... and more (see interfaces/CBSConnector.scala)
 }
 ```
@@ -253,7 +262,7 @@ class MockCBSConnector extends CBSConnector {
       callContext
     ))
   }
-  
+
   // ... other operations
 }
 ```
@@ -269,6 +278,7 @@ val telemetry = new ConsoleTelemetry()
 ```
 
 Output:
+
 ```
 [INFO][CID: 1flssoftxq0cr1nssr68u0mioj] Message received: type=obp.getBank queue=obp.request
 [INFO][CID: 1flssoftxq0cr1nssr68u0mioj] CBS operation started: getBank
@@ -283,6 +293,7 @@ val telemetry = new PrometheusTelemetry(prometheusConfig)
 ```
 
 Exposes metrics at `/metrics`:
+
 - `obp_messages_received_total{type="obp.getBank"}`
 - `obp_messages_processed_seconds{type="obp.getBank"}`
 - `obp_cbs_operation_duration_seconds{operation="getBank"}`
@@ -368,7 +379,7 @@ class YourBankConnectorSpec extends CatsEffectSuite {
   test("getBank returns bank data") {
     val connector = new YourBankConnector(mockHttp, NoOpTelemetry)
     val result = connector.getBank("test-bank", CallContext("test-123"))
-    
+
     result.map {
       case CBSResponse.Success(bank, _, _) =>
         assertEquals(bank.bankId, "test-bank")
@@ -419,6 +430,7 @@ def getBank(...): IO[CBSResponse[BankCommons]] = {
 ```
 
 Errors are:
+
 - Logged with correlation ID
 - Sent as telemetry events
 - Returned to OBP with proper error codes
@@ -455,64 +467,51 @@ spec:
   template:
     spec:
       containers:
-      - name: adapter
-        image: obp-adapter:latest
-        env:
-        - name: RABBITMQ_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: obp-config
-              key: rabbitmq.host
-        - name: CBS_BASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: cbs-credentials
-              key: base-url
+        - name: adapter
+          image: obp-adapter:latest
+          env:
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: obp-config
+                  key: rabbitmq.host
+            - name: CBS_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cbs-credentials
+                  key: base-url
 ```
 
 ## Configuration Reference
 
 ### HTTP Server
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `HTTP_HOST` | HTTP server host | `0.0.0.0` |
-| `HTTP_PORT` | HTTP server port | `8080` |
-| `HTTP_ENABLED` | Enable HTTP server | `true` |
+| Variable       | Description        | Default   |
+| -------------- | ------------------ | --------- |
+| `HTTP_HOST`    | HTTP server host   | `0.0.0.0` |
+| `HTTP_PORT`    | HTTP server port   | `8080`    |
+| `HTTP_ENABLED` | Enable HTTP server | `true`    |
 
 ### RabbitMQ
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `RABBITMQ_HOST` | RabbitMQ server host | `localhost` |
-| `RABBITMQ_PORT` | RabbitMQ server port | `5672` |
-| `RABBITMQ_USERNAME` | Username | `guest` |
-| `RABBITMQ_PASSWORD` | Password | `guest` |
-| `RABBITMQ_VIRTUAL_HOST` | Virtual host | `/` |
-| `RABBITMQ_REQUEST_QUEUE` | Request queue name | `obp.request` |
-| `RABBITMQ_RESPONSE_QUEUE` | Response queue name | `obp.response` |
-| `RABBITMQ_PREFETCH_COUNT` | Messages to prefetch | `10` |
-
-### CBS
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `CBS_BASE_URL` | CBS API base URL | Required |
-| `CBS_AUTH_TYPE` | Auth type (none/basic/bearer) | `none` |
-| `CBS_USERNAME` | Username (basic auth) | - |
-| `CBS_PASSWORD` | Password (basic auth) | - |
-| `CBS_BEARER_TOKEN` | Token (bearer auth) | - |
-| `CBS_TIMEOUT` | Request timeout (seconds) | `30` |
-| `CBS_MAX_RETRIES` | Max retry attempts | `3` |
-| `CBS_RETRY_DELAY` | Delay between retries (seconds) | `1` |
+| Variable                  | Description          | Default        |
+| ------------------------- | -------------------- | -------------- |
+| `RABBITMQ_HOST`           | RabbitMQ server host | `localhost`    |
+| `RABBITMQ_PORT`           | RabbitMQ server port | `5672`         |
+| `RABBITMQ_USERNAME`       | Username             | `guest`        |
+| `RABBITMQ_PASSWORD`       | Password             | `guest`        |
+| `RABBITMQ_VIRTUAL_HOST`   | Virtual host         | `/`            |
+| `RABBITMQ_REQUEST_QUEUE`  | Request queue name   | `obp.request`  |
+| `RABBITMQ_RESPONSE_QUEUE` | Response queue name  | `obp.response` |
+| `RABBITMQ_PREFETCH_COUNT` | Messages to prefetch | `10`           |
 
 ### Telemetry
 
-| Variable | Description | Default |
-|----------|-------------|---------|
+| Variable         | Description                    | Default   |
+| ---------------- | ------------------------------ | --------- |
 | `TELEMETRY_TYPE` | Type (console/prometheus/noop) | `console` |
-| `ENABLE_METRICS` | Enable metrics | `true` |
-| `LOG_LEVEL` | Log level | `INFO` |
+| `ENABLE_METRICS` | Enable metrics                 | `true`    |
+| `LOG_LEVEL`      | Log level                      | `INFO`    |
 
 ## FAQ
 
@@ -566,6 +565,7 @@ Apache License 2.0
 ## Credits
 
 Built with:
+
 - [Scala](https://www.scala-lang.org/) - Programming language
 - [Cats Effect](https://typelevel.org/cats-effect/) - Functional effects
 - [fs2](https://fs2.io/) - Functional streams
