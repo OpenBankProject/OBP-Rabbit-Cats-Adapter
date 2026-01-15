@@ -170,7 +170,7 @@ object DiscoveryServer {
               "userAuthContext" -> List.empty[String].asJson,
               "authViews" -> List.empty[String].asJson
             ).asJson,
-            "outboundAdapterConsenterInfo" -> None.asJson
+            "outboundAdapterConsenterInfo" -> JsonObject.empty.asJson
           ).asJson,
           "data" -> JsonObject.empty.asJson
         ).asJson.noSpaces
@@ -439,7 +439,7 @@ object DiscoveryServer {
                 <div class="card card-full">
                     <h2>Test Messages</h2>
                     <p style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
-                        Send test messages to RabbitMQ to verify the adapter is working
+                        Send test messages to RabbitMQ to verify that the adapter is consuming messages and replying. You can check the difference between the actual and expected messages below.
                     </p>
 
                     <!-- Expected Message Format -->
@@ -483,12 +483,7 @@ object DiscoveryServer {
                         <details>
                             <summary style="cursor: pointer; font-weight: bold; color: #374151; padding: 0.5rem; background: white; border-radius: 4px; border: 1px solid #e5e7eb;">Expected Inbound</summary>
                             <pre style="margin: 0.75rem 0 0 0; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word; overflow-x: auto; background: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 4px; line-height: 1.4;">{
-      "data": {
-        "name": "string",
-        "version": "string",
-        "git_commit": "string",
-        "date": "string"
-      },
+      "data": {},
       "inboundAdapterCallContext": {
         "correlationId": "string",
         "sessionId": "string",
@@ -555,12 +550,7 @@ object DiscoveryServer {
             };
 
             const expectedInbound = {
-                "data": {
-                    "name": "string",
-                    "version": "string",
-                    "git_commit": "string",
-                    "date": "string"
-                },
+                "data": "object",
                 "inboundAdapterCallContext": {
                     "correlationId": "string",
                     "sessionId": "string",
@@ -582,8 +572,8 @@ object DiscoveryServer {
                     if (expectedVal === "string" && typeof actualVal === "string") return true;
                     if (expectedVal === "number" && typeof actualVal === "number") return true;
                     if (expectedVal === "boolean" && typeof actualVal === "boolean") return true;
-                    if (expectedVal === "object" && typeof actualVal === "object" && actualVal !== null) return true;
-                    if (Array.isArray(expectedVal) && expectedVal.length === 0 && Array.isArray(actualVal)) return true;
+                    if (expectedVal === "object" && (typeof actualVal === "object" || actualVal === null)) return true;
+                    if (Array.isArray(expectedVal) && expectedVal.length === 0 && (Array.isArray(actualVal) || actualVal === null)) return true;
                     return false;
                 }
 
@@ -598,17 +588,17 @@ object DiscoveryServer {
 
                         if (expectedVal === undefined) {
                             stats.extra++;
-                            html += '<div style="background: #dbeafe; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #3b82f6;">+ ' + contextPrefix + currentPath + ': ' + JSON.stringify(actualVal) + ' (extra field)</div>';
+                            html += '<div style="background: #dbeafe; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #3b82f6;">[EXTRA] ' + contextPrefix + currentPath + ': ' + JSON.stringify(actualVal) + ' (extra field)</div>';
                         } else if (actualVal === undefined) {
                             stats.issues++;
-                            html += '<div style="background: #fee2e2; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #dc2626;">✗ ' + contextPrefix + currentPath + ' is missing (expected type: ' + (typeof expectedVal === 'object' ? 'object' : expectedVal) + ')</div>';
+                            html += '<div style="background: #fee2e2; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #dc2626;">[MISSING] ' + contextPrefix + currentPath + ' is missing (expected type: ' + (typeof expectedVal === 'object' ? 'object' : expectedVal) + ')</div>';
                         } else if (isTypePlaceholder(expectedVal, actualVal)) {
                             stats.matches++;
                         } else if (typeof actualVal === 'object' && actualVal !== null && typeof expectedVal === 'object' && expectedVal !== null && !Array.isArray(actualVal)) {
                             html += diffRecursive(actualVal, expectedVal, currentPath);
                         } else if (expectedVal !== actualVal) {
                             stats.issues++;
-                            html += '<div style="background: #fef3c7; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #f59e0b;">⚠ ' + contextPrefix + currentPath + ': got "' + actualVal + '", expected "' + expectedVal + '"</div>';
+                            html += '<div style="background: #fef3c7; padding: 0.25rem 0.5rem; margin: 0.1rem 0; border-left: 3px solid #f59e0b;">[MISMATCH] ' + contextPrefix + currentPath + ': got "' + actualVal + '", expected "' + expectedVal + '"</div>';
                         } else {
                             stats.matches++;
                         }
@@ -625,7 +615,7 @@ object DiscoveryServer {
                 summary += 'Summary: ' + stats.matches + ' matches, ' + stats.issues + ' issues, ' + stats.extra + ' extra fields';
                 summary += '</div>';
 
-                return summary + (diffHtml || '<div style="padding: 0.5rem; color: #666;">All fields match expected schema ✓</div>');
+                return summary + (diffHtml || '<div style="padding: 0.5rem; color: #666;">All fields match expected schema</div>');
             }
 
             async function sendTestMessage() {
