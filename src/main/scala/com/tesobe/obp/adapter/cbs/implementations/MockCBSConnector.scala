@@ -40,12 +40,12 @@ class MockCBSConnector(telemetry: Telemetry) extends CBSConnector {
   override def version: String = "1.0.0"
 
   override def handleMessage(
-    messageType: String,
+    process: String,
     data: JsonObject,
     callContext: CallContext
   ): IO[CBSResponse] = {
     
-    messageType match {
+    process match {
       case "obp.getAdapterInfo" => getAdapterInfo(callContext)
       case "obp.getBank" => getBank(data, callContext)
       case "obp.getBankAccount" => getBankAccount(data, callContext)
@@ -53,7 +53,7 @@ class MockCBSConnector(telemetry: Telemetry) extends CBSConnector {
       case "obp.getTransactions" => getTransactions(data, callContext)
       case "obp.checkFundsAvailable" => checkFundsAvailable(data, callContext)
       case "obp.makePayment" => makePayment(data, callContext)
-      case _ => handleUnsupported(messageType, callContext)
+      case _ => handleUnsupported(process, callContext)
     }
   }
 
@@ -242,18 +242,18 @@ class MockCBSConnector(telemetry: Telemetry) extends CBSConnector {
     )
   }
 
-  private def handleUnsupported(messageType: String, callContext: CallContext): IO[CBSResponse] = {
-    telemetry.warn(s"Unsupported message type: $messageType", Some(callContext.correlationId)) *>
+  private def handleUnsupported(process: String, callContext: CallContext): IO[CBSResponse] = {
+    telemetry.warn(s"Unsupported message type: $process", Some(callContext.correlationId)) *>
     IO.pure(
       CBSResponse.error(
         code = "OBP-50000",
-        message = s"Message type not implemented: $messageType",
+        message = s"Message type not implemented: $process",
         messages = List(
           BackendMessage(
             source = "MockCBS",
             status = "error",
             errorCode = "NOT_IMPLEMENTED",
-            text = s"Message type $messageType is not implemented in MockCBSConnector",
+            text = s"Message type $process is not implemented in MockCBSConnector",
             duration = None
           )
         )

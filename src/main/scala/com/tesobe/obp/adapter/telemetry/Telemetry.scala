@@ -37,7 +37,7 @@ trait Telemetry {
    * Record when a message is received from RabbitMQ
    */
   def recordMessageReceived(
-    messageType: String,
+    process: String,
     correlationId: String,
     queueName: String
   ): IO[Unit]
@@ -46,7 +46,7 @@ trait Telemetry {
    * Record when a message is successfully processed
    */
   def recordMessageProcessed(
-    messageType: String,
+    process: String,
     correlationId: String,
     duration: FiniteDuration
   ): IO[Unit]
@@ -55,7 +55,7 @@ trait Telemetry {
    * Record when message processing fails
    */
   def recordMessageFailed(
-    messageType: String,
+    process: String,
     correlationId: String,
     errorCode: String,
     errorMessage: String,
@@ -66,7 +66,7 @@ trait Telemetry {
    * Record when a response is sent back to RabbitMQ
    */
   def recordResponseSent(
-    messageType: String,
+    process: String,
     correlationId: String,
     success: Boolean
   ): IO[Unit]
@@ -274,10 +274,10 @@ trait Telemetry {
  * No-op telemetry implementation for testing or when telemetry is disabled
  */
 object NoOpTelemetry extends Telemetry {
-  override def recordMessageReceived(messageType: String, correlationId: String, queueName: String): IO[Unit] = IO.unit
-  override def recordMessageProcessed(messageType: String, correlationId: String, duration: FiniteDuration): IO[Unit] = IO.unit
-  override def recordMessageFailed(messageType: String, correlationId: String, errorCode: String, errorMessage: String, duration: FiniteDuration): IO[Unit] = IO.unit
-  override def recordResponseSent(messageType: String, correlationId: String, success: Boolean): IO[Unit] = IO.unit
+  override def recordMessageReceived(process: String, correlationId: String, queueName: String): IO[Unit] = IO.unit
+  override def recordMessageProcessed(process: String, correlationId: String, duration: FiniteDuration): IO[Unit] = IO.unit
+  override def recordMessageFailed(process: String, correlationId: String, errorCode: String, errorMessage: String, duration: FiniteDuration): IO[Unit] = IO.unit
+  override def recordResponseSent(process: String, correlationId: String, success: Boolean): IO[Unit] = IO.unit
   override def recordCBSOperationStart(operation: String, correlationId: String): IO[Unit] = IO.unit
   override def recordCBSOperationSuccess(operation: String, correlationId: String, duration: FiniteDuration): IO[Unit] = IO.unit
   override def recordCBSOperationFailure(operation: String, correlationId: String, errorCode: String, errorMessage: String, duration: FiniteDuration): IO[Unit] = IO.unit
@@ -315,23 +315,23 @@ class ConsoleTelemetry extends Telemetry {
     println(s"[$level]$cidStr $message")
   }
 
-  override def recordMessageReceived(messageType: String, correlationId: String, queueName: String): IO[Unit] =
-    IO(PrometheusMetrics.messagesReceived.labels(messageType, queueName).inc()) *>
-    log("INFO", s"Message received: type=$messageType queue=$queueName", Some(correlationId))
+  override def recordMessageReceived(process: String, correlationId: String, queueName: String): IO[Unit] =
+    IO(PrometheusMetrics.messagesReceived.labels(process, queueName).inc()) *>
+    log("INFO", s"Message received: type=$process queue=$queueName", Some(correlationId))
 
-  override def recordMessageProcessed(messageType: String, correlationId: String, duration: FiniteDuration): IO[Unit] =
+  override def recordMessageProcessed(process: String, correlationId: String, duration: FiniteDuration): IO[Unit] =
     IO {
-      PrometheusMetrics.messagesProcessed.labels(messageType).inc()
-      PrometheusMetrics.messageProcessingDuration.labels(messageType).observe(duration.toMillis / 1000.0)
-    } *> log("INFO", s"Message processed: type=$messageType duration=${duration.toMillis}ms", Some(correlationId))
+      PrometheusMetrics.messagesProcessed.labels(process).inc()
+      PrometheusMetrics.messageProcessingDuration.labels(process).observe(duration.toMillis / 1000.0)
+    } *> log("INFO", s"Message processed: type=$process duration=${duration.toMillis}ms", Some(correlationId))
 
-  override def recordMessageFailed(messageType: String, correlationId: String, errorCode: String, errorMessage: String, duration: FiniteDuration): IO[Unit] =
-    IO(PrometheusMetrics.messagesFailed.labels(messageType, errorCode).inc()) *>
-    log("ERROR", s"Message failed: type=$messageType error=$errorCode message=$errorMessage duration=${duration.toMillis}ms", Some(correlationId))
+  override def recordMessageFailed(process: String, correlationId: String, errorCode: String, errorMessage: String, duration: FiniteDuration): IO[Unit] =
+    IO(PrometheusMetrics.messagesFailed.labels(process, errorCode).inc()) *>
+    log("ERROR", s"Message failed: type=$process error=$errorCode message=$errorMessage duration=${duration.toMillis}ms", Some(correlationId))
 
-  override def recordResponseSent(messageType: String, correlationId: String, success: Boolean): IO[Unit] =
-    IO(PrometheusMetrics.responsesSent.labels(messageType, success.toString).inc()) *>
-    log("INFO", s"Response sent: type=$messageType success=$success", Some(correlationId))
+  override def recordResponseSent(process: String, correlationId: String, success: Boolean): IO[Unit] =
+    IO(PrometheusMetrics.responsesSent.labels(process, success.toString).inc()) *>
+    log("INFO", s"Response sent: type=$process success=$success", Some(correlationId))
 
   override def recordCBSOperationStart(operation: String, correlationId: String): IO[Unit] =
     log("DEBUG", s"CBS operation started: $operation", Some(correlationId))

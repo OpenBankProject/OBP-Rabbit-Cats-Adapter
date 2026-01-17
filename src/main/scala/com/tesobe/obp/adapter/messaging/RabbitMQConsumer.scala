@@ -80,7 +80,7 @@ object RabbitMQConsumer {
     client: RabbitMQClient,
     channel: com.rabbitmq.client.Channel,
     messageJson: String,
-    messageType: String,
+    process: String,
     config: AdapterConfig,
     connector: CBSConnector,
     telemetry: Telemetry,
@@ -91,7 +91,7 @@ object RabbitMQConsumer {
     (for {
       // Increment outbound counter
       _ <- redis match {
-        case Some(r) => RedisCounter.incrementOutbound(r, messageType)
+        case Some(r) => RedisCounter.incrementOutbound(r, process)
         case None    => IO.unit
       }
       // Parse the message
@@ -104,7 +104,7 @@ object RabbitMQConsumer {
       dataFields = jsonObj.filterKeys(_ != "outboundAdapterCallContext")
       
       _ <- telemetry.recordMessageReceived(
-        messageType,
+        process,
         outboundMsg.outboundAdapterCallContext.correlationId,
         config.queue.requestQueue
       )
@@ -113,11 +113,11 @@ object RabbitMQConsumer {
       callContext = CallContext.fromOutbound(outboundMsg)
       
       // Log message processing
-      _ <- IO.println(s"[${callContext.correlationId}] Processing: $messageType")
+      _ <- IO.println(s"[${callContext.correlationId}] Processing: $process")
       
       // Call CBS connector - use handleMessage method
       cbsResponse <- connector.handleMessage(
-        messageType,
+        process,
         dataFields,
         callContext
       )
@@ -130,14 +130,14 @@ object RabbitMQConsumer {
 
       // Increment inbound counter
       _ <- redis match {
-        case Some(r) => RedisCounter.incrementInbound(r, messageType)
+        case Some(r) => RedisCounter.incrementInbound(r, process)
         case None    => IO.unit
       }
       
       // Record success
       duration = (System.currentTimeMillis() - startTime).millis
       _ <- telemetry.recordMessageProcessed(
-        messageType,
+        process,
         callContext.correlationId,
         duration
       )
@@ -149,7 +149,7 @@ object RabbitMQConsumer {
       val duration = (System.currentTimeMillis() - startTime).millis
       for {
         _ <- telemetry.recordMessageFailed(
-          messageType = "unknown",
+          process = "unknown",
           correlationId = "unknown",
           errorCode = "ADAPTER_ERROR",
           errorMessage = error.getMessage,

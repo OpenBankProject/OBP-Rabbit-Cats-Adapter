@@ -60,13 +60,13 @@ trait CBSConnector {
    * This is the main entry point. The generic adapter calls this method
    * for every message received from RabbitMQ.
    * 
-   * @param messageType The OBP message type (e.g., "obp.getBank", "obp.makePayment")
+   * @param process The OBP message type (e.g., "obp.getBank", "obp.makePayment")
    * @param data The data payload from the OBP message (varies by message type)
    * @param callContext Context information (correlation ID, user info, etc.)
    * @return Either error response or success response with data matching message docs
    */
   def handleMessage(
-    messageType: String,
+    process: String,
     data: JsonObject,
     callContext: CallContext
   ): IO[CBSResponse]

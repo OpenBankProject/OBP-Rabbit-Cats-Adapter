@@ -117,7 +117,7 @@ object DiscoveryServer {
           val response = JsonObject(
             "status" -> "success".asJson,
             "message" -> "Test message sent to RabbitMQ".asJson,
-            "messageType" -> "obp.getAdapterInfo".asJson,
+            "process" -> "obp.getAdapterInfo".asJson,
             "correlationId" -> correlationId.asJson,
             "queue" -> config.queue.requestQueue.asJson,
             "outboundMessage" -> outboundMessage.asJson
@@ -148,8 +148,8 @@ object DiscoveryServer {
       }
 
     // Get message schema from OBP message docs
-    case GET -> Root / "test" / "schema" / messageType =>
-      fetchMessageSchema(config, messageType).flatMap {
+    case GET -> Root / "test" / "schema" / process =>
+      fetchMessageSchema(config, process).flatMap {
         case Right(schema) =>
           Ok(schema).map(
             _.withContentType(`Content-Type`(MediaType.application.json))
@@ -196,34 +196,34 @@ object DiscoveryServer {
               .flatMap(_.asArray)
               .getOrElse(Vector.empty)
 
-            val messageTypes = messageDocs
+            val processs = messageDocs
               .flatMap(_.hcursor.downField("process").as[String].toOption)
               .toList
               .sorted
 
             redisCommands match {
               case Some(redis) =>
-                messageTypes
-                  .traverse { messageType =>
+                processs
+                  .traverse { process =>
                     for {
                       outbound <- RedisCounter.getOutboundCount(
                         redis,
-                        messageType
+                        process
                       )
                       inbound <- RedisCounter.getInboundCount(
                         redis,
-                        messageType
+                        process
                       )
-                    } yield (messageType, outbound, inbound)
+                    } yield (process, outbound, inbound)
                   }
                   .map { counts =>
                     renderMessagesPage(
-                      messageTypes.zip(counts.map(c => (c._2, c._3)))
+                      processs.zip(counts.map(c => (c._2, c._3)))
                     )
                   }
               case None =>
                 IO.pure(
-                  renderMessagesPage(messageTypes.map(mt => (mt, (0L, 0L))))
+                  renderMessagesPage(processs.map(mt => (mt, (0L, 0L))))
                 )
             }
           case Left(error) =>
@@ -239,9 +239,9 @@ object DiscoveryServer {
       messages: List[(String, (Long, Long))]
   ): String = {
     val rows = messages
-      .map { case (messageType, (outbound, inbound)) =>
+      .map { case (process, (outbound, inbound)) =>
         s"""<tr>
-         |  <td>$messageType</td>
+         |  <td>$process</td>
          |  <td>$outbound</td>
          |  <td>$inbound</td>
          |</tr>""".stripMargin
@@ -264,9 +264,9 @@ object DiscoveryServer {
        |  <h1>OBP Message Types</h1>
        |  <table>
        |    <tr>
-       |      <th>Message Type</th>
-       |      <th>Outbound Count</th>
-       |      <th>Inbound Count</th>
+       |      <th>Process</th>
+       |      <th>Consumed from RabbitMQ</th>
+       |      <th>Published to RabbitMQ</th>
        |    </tr>
        |    $rows
        |  </table>
@@ -278,7 +278,7 @@ object DiscoveryServer {
     */
   private def sendTestMessage(
       config: AdapterConfig,
-      messageType: String
+      process: String
   ): IO[Either[String, (String, String)]] = {
     import java.util.UUID
     import io.circe.syntax._
@@ -316,10 +316,10 @@ object DiscoveryServer {
                   channel,
                   config.queue.requestQueue,
                   testMessage,
-                  Some(messageType)
+                  Some(process)
                 )
                 _ <- IO.println(
-                  s"[TEST] Sent message: $messageType (routing key) with correlation ID: $correlationId"
+                  s"[TEST] Sent message: $process (routing key) with correlation ID: $correlationId"
                 )
               } yield Right((correlationId, testMessage))
             }
@@ -363,7 +363,7 @@ object DiscoveryServer {
     */
   private def fetchMessageSchema(
       config: AdapterConfig,
-      messageType: String
+      process: String
   ): IO[Either[String, String]] = {
     import org.http4s.client.Client
     import org.http4s.ember.client.EmberClientBuilder
@@ -391,14 +391,14 @@ object DiscoveryServer {
                       .downField("process")
                       .as[String]
                       .toOption
-                      .contains(messageType)
+                      .contains(process)
                   }
 
                   messageOpt match {
                     case Some(msgSchema) =>
                       val result = io.circe
                         .JsonObject(
-                          "messageType" -> messageType.asJson,
+                          "process" -> process.asJson,
                           "outboundExample" -> msgSchema.hcursor
                             .downField("example_outbound_message")
                             .focus
@@ -419,7 +419,7 @@ object DiscoveryServer {
                     case None =>
                       IO.pure(
                         Left(
-                          s"Message type '$messageType' not found in message docs"
+                          s"Message type '$process' not found in message docs"
                         )
                       )
                   }
@@ -841,7 +841,7 @@ object DiscoveryServer {
                         const outboundContent = `
                             <strong>Outbound Message Sent:</strong><br>
                             <div style="margin-top: 0.5rem; padding: 0.5rem; background: white; border-radius: 4px; color: #333;">
-                                <strong>Message Type:</strong> $${data.messageType}<br>
+                                <strong>Process:</strong> $${data.process}<br>
                                 <strong>Correlation ID:</strong> $${data.correlationId}<br>
                                 <strong>Queue:</strong> $${data.queue}<br>
                                 <details style="margin-top: 0.5rem;">
