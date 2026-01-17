@@ -267,6 +267,10 @@ object DiscoveryServer {
        |  </style>
        |</head>
        |<body>
+       |  <div style="margin-bottom: 20px;">
+       |    <a href="/" style="color: #667eea; text-decoration: none; margin-right: 20px;">Back to Home</a>
+       |    <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Refresh</button>
+       |  </div>
        |  <h1>OBP Message Types</h1>
        |  <table>
        |    <tr>
