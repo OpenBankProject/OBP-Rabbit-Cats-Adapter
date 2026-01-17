@@ -141,6 +141,19 @@ object DiscoveryServer {
             |}""".stripMargin)
             .map(_.withContentType(`Content-Type`(MediaType.application.json)))
       }
+
+    // Get JSON Schema from new OBP endpoint
+    case GET -> Root / "obp" / "v6.0.0" / "message-docs" / connector / "json-schema" =>
+      fetchJsonSchema(config, connector).flatMap {
+        case Right(schema) =>
+          Ok(schema).map(_.withContentType(`Content-Type`(MediaType.application.json)))
+        case Left(error) =>
+          InternalServerError(s"""{
+            |  "status": "error",
+            |  "message": "$error"
+            |}""".stripMargin)
+            .map(_.withContentType(`Content-Type`(MediaType.application.json)))
+      }
   }
 
   /**
@@ -185,12 +198,30 @@ object DiscoveryServer {
         }.handleErrorWith { error =>
           IO.pure(Left(s"Failed to publish message: ${error.getMessage}"))
         }
+      }
     }
-  }
 
-  /**
-   * Fetch message schema from OBP message docs endpoint
-   */
+    /**
+     * Fetch JSON Schema from new OBP endpoint
+     */
+    private def fetchJsonSchema(config: AdapterConfig, connector: String): IO[Either[String, String]] = {
+      import org.http4s.client.Client
+      import org.http4s.ember.client.EmberClientBuilder
+
+      val schemaUrl = s"${config.http.obpApiUrl}/obp/v6.0.0/message-docs/$connector/json-schema"
+
+      EmberClientBuilder.default[IO].build.use { client =>
+        client.expect[String](schemaUrl).map { jsonStr =>
+          Right(jsonStr)
+        }
+      }.handleErrorWith { error =>
+        IO.pure(Left(s"Failed to fetch JSON Schema from $schemaUrl: ${error.getMessage}"))
+      }
+    }
+
+    /**
+     * Generate info JSON
+     */
   private def fetchMessageSchema(config: AdapterConfig, messageType: String): IO[Either[String, String]] = {
     import org.http4s.client.Client
     import org.http4s.ember.client.EmberClientBuilder
@@ -454,12 +485,12 @@ object DiscoveryServer {
                         </div>
 
                         <details style="margin-bottom: 1rem;">
-                            <summary style="cursor: pointer; font-weight: bold; color: #374151; padding: 0.5rem; background: white; border-radius: 4px; border: 1px solid #e5e7eb;">Expected Outbound</summary>
+                            <summary style="cursor: pointer; font-weight: bold; color: #374151; padding: 0.5rem; background: white; border-radius: 4px; border: 1px solid #e5e7eb;">Expected Outbound (source of truth)</summary>
                             <pre id="expected-outbound-display" style="margin: 0.75rem 0 0 0; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word; overflow-x: auto; background: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 4px; line-height: 1.4;">Loading from Message Docs API...</pre>
                         </details>
 
                         <details>
-                            <summary style="cursor: pointer; font-weight: bold; color: #374151; padding: 0.5rem; background: white; border-radius: 4px; border: 1px solid #e5e7eb;">Expected Inbound</summary>
+                            <summary style="cursor: pointer; font-weight: bold; color: #374151; padding: 0.5rem; background: white; border-radius: 4px; border: 1px solid #e5e7eb;">Expected Inbound (source of truth)</summary>
                             <pre id="expected-inbound-display" style="margin: 0.75rem 0 0 0; font-size: 0.85rem; white-space: pre-wrap; word-wrap: break-word; overflow-x: auto; background: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 4px; line-height: 1.4;">Loading from Message Docs API...</pre>
                         </details>
                     </div>

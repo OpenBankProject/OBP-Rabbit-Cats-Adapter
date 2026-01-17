@@ -38,15 +38,55 @@ if command -v nc > /dev/null; then
     echo "[OK] RabbitMQ is reachable at $RABBITMQ_HOST:$RABBITMQ_PORT"
   else
     echo "[WARNING] Cannot reach RabbitMQ at $RABBITMQ_HOST:$RABBITMQ_PORT"
-    echo "   Make sure RabbitMQ is running:"
-    echo "   docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management"
-    echo ""
-    echo "   Or install locally: https://www.rabbitmq.com/download.html"
-    echo ""
-    read -p "Continue anyway? (y/n) " -n 1 -r
-    echo ""
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-      exit 1
+
+    # Check if Docker is available
+    if command -v docker > /dev/null; then
+      echo "[INFO] Docker is available. Checking for RabbitMQ container..."
+
+      # Check if rabbitmq container exists
+      if docker ps -a --format '{{.Names}}' | grep -q '^rabbitmq$'; then
+        # Container exists, check if it's running
+        if docker ps --format '{{.Names}}' | grep -q '^rabbitmq$'; then
+          echo "[INFO] RabbitMQ container is running but not reachable yet. Waiting..."
+          sleep 5
+        else
+          echo "[INFO] Starting existing RabbitMQ container..."
+          docker start rabbitmq
+          echo "[INFO] Waiting for RabbitMQ to be ready..."
+          sleep 10
+        fi
+      else
+        # Container doesn't exist, create and start it
+        echo "[INFO] Creating and starting RabbitMQ container..."
+        docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+        echo "[INFO] Waiting for RabbitMQ to be ready..."
+        sleep 15
+      fi
+
+      # Check connection again
+      if nc -z $RABBITMQ_HOST $RABBITMQ_PORT 2>/dev/null; then
+        echo "[OK] RabbitMQ is now reachable at $RABBITMQ_HOST:$RABBITMQ_PORT"
+        echo "[INFO] Management UI available at http://localhost:15672 (guest/guest)"
+      else
+        echo "[WARNING] RabbitMQ container started but still not reachable"
+        echo "   You may need to wait a bit longer for RabbitMQ to initialize"
+        echo ""
+        read -p "Continue anyway? (y/n) " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+          exit 1
+        fi
+      fi
+    else
+      echo "[ERROR] Docker is not available"
+      echo "   Please install Docker or start RabbitMQ manually"
+      echo "   Manual installation: https://www.rabbitmq.com/download.html"
+      echo ""
+      read -p "Continue anyway? (y/n) " -n 1 -r
+      echo ""
+      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+      fi
     fi
   fi
 else
