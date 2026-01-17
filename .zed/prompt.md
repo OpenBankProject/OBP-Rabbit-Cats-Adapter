@@ -2,15 +2,20 @@
 
 ## ⚠️ CRITICAL: Message Structure Source of Truth
 
-**The OBP Message Docs API is the absolute SOURCE OF TRUTH for all message structures.**
+**The OBP Message Docs APIs are the absolute SOURCE OF TRUTH for all message structures.**
 
 ### What This Means
 
-The endpoint `/obp/v6.0.0/message-docs/rabbitmq_vOct2024` returns message schemas with:
+The endpoint `/obp/v6.0.0/message-docs/rabbitmq_vOct2024` returns message examples with:
+
 - `example_outbound_message` - Messages FROM OBP-API TO this adapter
 - `example_inbound_message` - Messages FROM this adapter TO OBP-API
 
-These examples define the **correct and authoritative** message structure.
+Outbound and Inbound is from the perspective of OBP-API.
+
+See `/obp/v6.0.0/message-docs/rabbitmq_vOct2024/json-schema` for the authoritative JSON schemas.
+
+These endpoints define the **correct and authoritative** message structure.
 
 ### Rules When Working With Messages
 
@@ -54,24 +59,11 @@ These examples define the **correct and authoritative** message structure.
 ### Architecture Context
 
 This adapter sits between:
+
 - **OBP-API** (OpenBankProject) ← uses Message Docs format (SOURCE OF TRUTH)
 - **CBS** (Core Banking System) ← adapter translates to CBS-specific format
 
 The adapter's job is to translate between these systems. OBP's format is fixed and authoritative.
-
-## Project Structure
-
-- **Scala/Cats Effect project** using functional programming patterns
-- **RabbitMQ messaging** for async communication with OBP-API
-- **HTTP4s server** for discovery/testing UI at `http://localhost:8082`
-- **JSON handling** via Circe library
-- **Configuration** in `application.conf`
-
-## Testing
-
-- Web UI available at `http://localhost:8082` for testing message flows
-- Test endpoint: `POST /test/adapter-info` sends a test message
-- Messages can be monitored via RabbitMQ management UI
 
 ## Code Style
 
@@ -80,3 +72,12 @@ The adapter's job is to translate between these systems. OBP's format is fixed a
 - Pattern matching for flow control
 - Circe for JSON encoding/decoding
 - Avoid side effects outside IO
+
+Do not hide error messages. Do not have fallbacks.
+Keep it simple.
+Use DRY principles.
+No marketing bullshit.
+Don't tell me its perfect.
+No summaries unless explcitedly requested.
+No faking results.
+Show the original OBP error messages unmodified.

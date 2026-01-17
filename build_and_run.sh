@@ -94,6 +94,57 @@ else
 fi
 echo ""
 
+# Check Redis connection
+echo "[Redis] Checking Redis connection..."
+REDIS_HOST=${REDIS_HOST:-localhost}
+REDIS_PORT=${REDIS_PORT:-6379}
+REDIS_ENABLED=${REDIS_ENABLED:-true}
+
+if [ "$REDIS_ENABLED" = "true" ]; then
+  if command -v nc > /dev/null; then
+    if nc -z $REDIS_HOST $REDIS_PORT 2>/dev/null; then
+      echo "[OK] Redis is reachable at $REDIS_HOST:$REDIS_PORT"
+    else
+      echo "[WARNING] Cannot reach Redis at $REDIS_HOST:$REDIS_PORT"
+
+      if command -v docker > /dev/null; then
+        echo "[INFO] Docker is available. Checking for Redis container..."
+
+        if docker ps -a --format '{{.Names}}' | grep -q '^redis$'; then
+          if docker ps --format '{{.Names}}' | grep -q '^redis$'; then
+            echo "[INFO] Redis container is running but not reachable yet. Waiting..."
+            sleep 2
+          else
+            echo "[INFO] Starting existing Redis container..."
+            docker start redis
+            echo "[INFO] Waiting for Redis to be ready..."
+            sleep 3
+          fi
+        else
+          echo "[INFO] Creating and starting Redis container..."
+          docker run -d --name redis -p 6379:6379 redis:7-alpine
+          echo "[INFO] Waiting for Redis to be ready..."
+          sleep 5
+        fi
+
+        if nc -z $REDIS_HOST $REDIS_PORT 2>/dev/null; then
+          echo "[OK] Redis is now reachable at $REDIS_HOST:$REDIS_PORT"
+        else
+          echo "[WARNING] Redis container started but still not reachable"
+          echo "   You may need to wait a bit longer for Redis to initialize"
+        fi
+      else
+        echo "[WARNING] Docker is not available, Redis will not be started"
+      fi
+    fi
+  else
+    echo "[INFO] netcat (nc) not available, skipping Redis connection check"
+  fi
+else
+  echo "[INFO] Redis is disabled"
+fi
+echo ""
+
 # Clean and compile
 echo "[BUILD] Cleaning previous build..."
 mvn clean -q

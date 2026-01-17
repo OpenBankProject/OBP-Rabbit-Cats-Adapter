@@ -35,8 +35,7 @@ object RabbitMQConsumer {
   def run(
     config: AdapterConfig,
     connector: CBSConnector,
-    telemetry: Telemetry,
-    redis: Option[dev.profunktor.redis4cats.RedisCommands[IO, String, String]]
+    telemetry: Telemetry
   ): IO[Unit] = {
     val client = RabbitMQClient(config)
     
@@ -60,7 +59,7 @@ object RabbitMQConsumer {
           _ <- client.consumeMessages(
             channel,
             config.queue.requestQueue,
-            (message, routingKey) => processMessage(client, channel, message, routingKey, config, connector, telemetry, redis)
+            (message, routingKey) => processMessage(client, channel, message, routingKey, config, connector, telemetry)
           )
           
         } yield ()
@@ -83,17 +82,11 @@ object RabbitMQConsumer {
     messageType: String,
     config: AdapterConfig,
     connector: CBSConnector,
-    telemetry: Telemetry,
-    redis: Option[dev.profunktor.redis4cats.RedisCommands[IO, String, String]]
+    telemetry: Telemetry
   ): IO[Unit] = {
     val startTime = System.currentTimeMillis()
     
     (for {
-      // Increment outbound counter
-      _ <- redis match {
-        case Some(r) => RedisCounter.incrementOutbound(r, messageType)
-        case None    => IO.unit
-      }
       // Parse the message
       outboundMsg <- parseOutboundMessage(messageJson)
       
@@ -127,12 +120,6 @@ object RabbitMQConsumer {
       
       // Send response
       _ <- sendResponse(client, channel, config.queue.responseQueue, inboundMsg)
-
-      // Increment inbound counter
-      _ <- redis match {
-        case Some(r) => RedisCounter.incrementInbound(r, messageType)
-        case None    => IO.unit
-      }
       
       // Record success
       duration = (System.currentTimeMillis() - startTime).millis

@@ -10,9 +10,10 @@
 package com.tesobe.obp.adapter.http
 
 import cats.effect._
+import cats.implicits._
 import com.comcast.ip4s._
 import com.tesobe.obp.adapter.config.AdapterConfig
-import com.tesobe.obp.adapter.messaging.RabbitMQClient
+import com.tesobe.obp.adapter.messaging.{RabbitMQClient, RedisCounter}
 import org.http4s._
 import org.http4s.dsl.io._
 import org.http4s.ember.server.EmberServerBuilder
@@ -35,6 +36,12 @@ object DiscoveryServer {
     */
   private var rabbitClient: Option[RabbitMQClient] = None
 
+  /** Redis commands for counters
+    */
+  private var redisCommands
+      : Option[dev.profunktor.redis4cats.RedisCommands[IO, String, String]] =
+    None
+
   /** Cache for test message responses (correlationId -> response JSON)
     */
   private val responseCache =
@@ -42,6 +49,12 @@ object DiscoveryServer {
 
   def setRabbitClient(client: RabbitMQClient): Unit = {
     rabbitClient = Some(client)
+  }
+
+  def setRedisCommands(
+      redis: dev.profunktor.redis4cats.RedisCommands[IO, String, String]
+  ): Unit = {
+    redisCommands = Some(redis)
   }
 
   def cacheResponse(correlationId: String, response: String): Unit = {
@@ -59,6 +72,12 @@ object DiscoveryServer {
     // Main discovery page
     case GET -> Root =>
       Ok(discoveryPage(config), `Content-Type`(MediaType.text.html))
+
+    // Messages monitoring page
+    case GET -> Root / "messages" =>
+      messagesPage(config).flatMap(html =>
+        Ok(html, `Content-Type`(MediaType.text.html))
+      )
 
     // Health check endpoint
     case GET -> Root / "health" =>
@@ -157,6 +176,99 @@ object DiscoveryServer {
             |}""".stripMargin)
             .map(_.withContentType(`Content-Type`(MediaType.application.json)))
       }
+  }
+
+  /** Fetch messages page with counts
+    */
+  private def messagesPage(config: AdapterConfig): IO[String] = {
+    import io.circe.parser._
+
+    val schemaUrl =
+      s"${config.http.obpApiUrl}/obp/v6.0.0/message-docs/rabbitmq_vOct2024/json-schema"
+
+    org.http4s.ember.client.EmberClientBuilder.default[IO].build.use { client =>
+      client.expect[String](schemaUrl).flatMap { jsonStr =>
+        decode[io.circe.Json](jsonStr) match {
+          case Right(json) =>
+            val definitions = json.hcursor
+              .downField("definitions")
+              .focus
+              .getOrElse(io.circe.Json.obj())
+            val messageTypes = definitions.asObject
+              .map(_.keys.toList.sorted)
+              .getOrElse(List.empty)
+
+            redisCommands match {
+              case Some(redis) =>
+                messageTypes
+                  .traverse { messageType =>
+                    for {
+                      outbound <- RedisCounter.getOutboundCount(
+                        redis,
+                        messageType
+                      )
+                      inbound <- RedisCounter.getInboundCount(
+                        redis,
+                        messageType
+                      )
+                    } yield (messageType, outbound, inbound)
+                  }
+                  .map { counts =>
+                    renderMessagesPage(
+                      messageTypes.zip(counts.map(c => (c._2, c._3)))
+                    )
+                  }
+              case None =>
+                IO.pure(
+                  renderMessagesPage(messageTypes.map(mt => (mt, (0L, 0L))))
+                )
+            }
+          case Left(error) =>
+            IO.pure(
+              s"""<html><body><h1>Error</h1><pre>${error.getMessage}</pre></body></html>"""
+            )
+        }
+      }
+    }
+  }
+
+  private def renderMessagesPage(
+      messages: List[(String, (Long, Long))]
+  ): String = {
+    val rows = messages
+      .map { case (messageType, (outbound, inbound)) =>
+        s"""<tr>
+         |  <td>$messageType</td>
+         |  <td>$outbound</td>
+         |  <td>$inbound</td>
+         |</tr>""".stripMargin
+      }
+      .mkString("\n")
+
+    s"""<!DOCTYPE html>
+       |<html>
+       |<head>
+       |  <title>OBP Messages</title>
+       |  <style>
+       |    body { font-family: monospace; margin: 20px; }
+       |    table { border-collapse: collapse; width: 100%; }
+       |    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+       |    th { background-color: #667eea; color: white; }
+       |    tr:nth-child(even) { background-color: #f2f2f2; }
+       |  </style>
+       |</head>
+       |<body>
+       |  <h1>OBP Message Types</h1>
+       |  <table>
+       |    <tr>
+       |      <th>Message Type</th>
+       |      <th>Outbound Count</th>
+       |      <th>Inbound Count</th>
+       |    </tr>
+       |    $rows
+       |  </table>
+       |</body>
+       |</html>""".stripMargin
   }
 
   /** Send a test message to RabbitMQ
@@ -479,6 +591,7 @@ object DiscoveryServer {
        |                    <div>
        |                        <ul class="link-list">
        |                            <li><a href="$serverUrl/health">Health Check</a></li>
+                            <li><a href="$serverUrl/messages">Messages</a></li>
        |                            <li><a href="$serverUrl/ready">Readiness Check</a></li>
        |                            <li><a href="$serverUrl/metrics">Prometheus Metrics</a></li>
        |                            <li><a href="$serverUrl/info">Service Info (JSON)</a></li>

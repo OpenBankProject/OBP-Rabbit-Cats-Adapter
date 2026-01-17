@@ -10,7 +10,11 @@ import cats.effect.{ExitCode, IO, IOApp}
 import com.tesobe.obp.adapter.cbs.implementations.MockCBSConnector
 import com.tesobe.obp.adapter.config.Config
 import com.tesobe.obp.adapter.http.DiscoveryServer
-import com.tesobe.obp.adapter.messaging.{RabbitMQClient, RabbitMQConsumer}
+import com.tesobe.obp.adapter.messaging.{
+  RabbitMQClient,
+  RabbitMQConsumer,
+  RedisCounter
+}
 import com.tesobe.obp.adapter.telemetry.ConsoleTelemetry
 
 object AdapterMain extends IOApp {
@@ -81,33 +85,81 @@ object AdapterMain extends IOApp {
       }
       _ <- IO.println("")
 
-      // Initialize RabbitMQ client for test messages
+      // Create RabbitMQ client for test messages
       rabbitClient = RabbitMQClient(config)
       _ <- IO(DiscoveryServer.setRabbitClient(rabbitClient))
+
+      // Initialize Redis if enabled
+      _ <-
+        if (config.redis.enabled) {
+          IO.println(
+            s"[REDIS] Connecting to ${config.redis.host}:${config.redis.port}..."
+          )
+        } else {
+          IO.println("[REDIS] Redis disabled")
+        }
 
       // Start HTTP discovery server and RabbitMQ consumer concurrently
       _ <- IO.println("[STARTUP] Starting services...")
       _ <- IO.println("")
 
       exitCode <- (
-        if (config.http.enabled) {
-          DiscoveryServer.start(config).use { server =>
-            val displayHost =
-              if (config.http.host == "0.0.0.0") "localhost"
-              else config.http.host
-            IO.println(
-              s"[HTTP] Discovery server started at http://$displayHost:${config.http.port}"
-            ) *>
-              IO.println(
-                s"[INFO] Visit http://localhost:${config.http.port} to see service info"
-              ) *>
-              IO.println("") *>
-              RabbitMQConsumer.run(config, connector, telemetry)
+        if (config.redis.enabled) {
+          RedisCounter.create(config.redis.host, config.redis.port).use {
+            redis =>
+              IO(DiscoveryServer.setRedisCommands(redis)) *>
+                IO.println("[OK] Redis connected") *>
+                IO.println("") *>
+                (if (config.http.enabled) {
+                   DiscoveryServer.start(config).use { server =>
+                     val displayHost =
+                       if (config.http.host == "0.0.0.0") "localhost"
+                       else config.http.host
+                     IO.println(
+                       s"[HTTP] Discovery server started at http://$displayHost:${config.http.port}"
+                     ) *>
+                       IO.println(
+                         s"[INFO] Visit http://localhost:${config.http.port} to see service info"
+                       ) *>
+                       IO.println("") *>
+                       RabbitMQConsumer.run(
+                         config,
+                         connector,
+                         telemetry,
+                         Some(redis)
+                       )
+                   }
+                 } else {
+                   IO.println("[INFO] HTTP server disabled") *>
+                     IO.println("") *>
+                     RabbitMQConsumer.run(
+                       config,
+                       connector,
+                       telemetry,
+                       Some(redis)
+                     )
+                 })
           }
         } else {
-          IO.println("[INFO] HTTP server disabled") *>
-            IO.println("") *>
-            RabbitMQConsumer.run(config, connector, telemetry)
+          if (config.http.enabled) {
+            DiscoveryServer.start(config).use { server =>
+              val displayHost =
+                if (config.http.host == "0.0.0.0") "localhost"
+                else config.http.host
+              IO.println(
+                s"[HTTP] Discovery server started at http://$displayHost:${config.http.port}"
+              ) *>
+                IO.println(
+                  s"[INFO] Visit http://localhost:${config.http.port} to see service info"
+                ) *>
+                IO.println("") *>
+                RabbitMQConsumer.run(config, connector, telemetry, None)
+            }
+          } else {
+            IO.println("[INFO] HTTP server disabled") *>
+              IO.println("") *>
+              RabbitMQConsumer.run(config, connector, telemetry, None)
+          }
         }
       ).as(ExitCode.Success).handleErrorWith { error =>
         IO.println(s"[FATAL] Fatal error: ${error.getMessage}") *>
