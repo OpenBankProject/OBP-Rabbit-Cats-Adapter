@@ -314,8 +314,7 @@ object DiscoveryServer {
               "authViews" -> List.empty[String].asJson
             ).asJson,
             "outboundAdapterConsenterInfo" -> JsonObject.empty.asJson
-          ).asJson,
-          "data" -> JsonObject.empty.asJson
+          ).asJson
         ).asJson.noSpaces
         client.createConnection
           .use { connection =>
