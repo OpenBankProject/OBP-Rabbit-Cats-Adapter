@@ -194,13 +194,21 @@ object RabbitMQConsumer {
   ): IO[com.tesobe.obp.adapter.interfaces.CBSResponse] = {
     import io.circe.Json
     import io.circe.JsonObject
+    import scala.sys.process._
+
+    val gitCommit =
+      try {
+        "git rev-parse HEAD".!!.trim
+      } catch {
+        case _: Exception => "unknown"
+      }
 
     IO.pure(
       com.tesobe.obp.adapter.interfaces.CBSResponse.success(
         JsonObject(
           "name" -> Json.fromString("OBP-Rabbit-Cats-Adapter"),
           "version" -> Json.fromString("1.0.0-SNAPSHOT"),
-          "git_commit" -> Json.fromString("development"),
+          "git_commit" -> Json.fromString(gitCommit),
           "date" -> Json.fromString(java.time.Instant.now().toString)
         ),
         Nil
