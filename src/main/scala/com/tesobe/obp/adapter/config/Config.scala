@@ -105,7 +105,7 @@ object Config {
     )
 
     val queueConfig = QueueConfig(
-      requestQueue = env("RABBITMQ_REQUEST_QUEUE", "obp.request"),
+      requestQueue = env("RABBITMQ_REQUEST_QUEUE", "obp_rpc_queue"),
       responseQueue =
         env("RABBITMQ_RESPONSE_QUEUE", "obp.response"),
       prefetchCount = env("RABBITMQ_PREFETCH_COUNT", "10").toInt,
