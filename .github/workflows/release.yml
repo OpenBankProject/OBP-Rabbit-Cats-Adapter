@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 1.0.1)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    name: Tag & Publish to JitPack
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "ERROR: Version must be in format X.Y.Z (e.g. 1.0.1), got: $VERSION"
+            exit 1
+          fi
+
+      - name: Build and package
+        run: mvn clean package -DskipTests -Dscalatest.skip=true
+
+      - name: Create and push Git tag
+        run: |
+          VERSION="v${{ github.event.inputs.version }}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$VERSION" -m "Release $VERSION"
+          git push origin "$VERSION"
+          echo "TAG=$VERSION" >> $GITHUB_ENV
+
+      - name: Pre-warm JitPack build
+        run: |
+          REPO="OpenBankProject/OBP-Rabbit-Cats-Adapter"
+          TAG="${{ env.TAG }}"
+          URL="https://jitpack.io/com/github/${REPO}/${TAG}/build.log"
+          echo "Triggering JitPack build for $TAG ..."
+          # JitPack builds lazily on first request; this curl kicks it off
+          HTTP_STATUS=$(curl -sL -o /tmp/jitpack-build.log -w "%{http_code}" "$URL")
+          echo "JitPack responded with HTTP $HTTP_STATUS"
+          cat /tmp/jitpack-build.log | tail -20
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: Release ${{ env.TAG }}
+          body: |
+            ## JitPack dependency
+
+            Add the JitPack repository and dependency to your `pom.xml`:
+
+            ```xml
+            <repositories>
+              <repository>
+                <id>jitpack.io</id>
+                <url>https://jitpack.io</url>
+              </repository>
+            </repositories>
+
+            <dependency>
+              <groupId>com.github.OpenBankProject</groupId>
+              <artifactId>OBP-Rabbit-Cats-Adapter</artifactId>
+              <version>${{ env.TAG }}</version>
+            </dependency>
+            ```
+          files: target/obp-rabbit-cats-adapter.jar
+          draft: false
+          prerelease: false
