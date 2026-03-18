@@ -1,0 +1,2071 @@
+{
+  "info": {
+    "_postman_id": "dc89e6f0-5bd0-45f0-8611-a0ac25d2e66c",
+    "name": "OBP Workshop",
+    "description": "Workshop collection for testing OBP-API with RabbitMQ adapter",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "1279788",
+    "_collection_link": "https://go.postman.co/collection/1279788-dc89e6f0-5bd0-45f0-8611-a0ac25d2e66c?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "connectorMethods",
+      "item": [
+        {
+          "name": "getBanks",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "tests[\"Status code is 200\"] = responseCode.code === 200;"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/connector/getBanks",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "getBanks"
+              ]
+            },
+            "description": "\"getBranches\",\n\"GET\",\n\"/banks/BANK_ID/branches\",\n\"Get Bank Branches\",\ns\"\"\"Returns information about branches for a single bank specified by BANK_ID including:\n  |\n  |* Name\n  |* Address\n  |* Geo Location\n  |* License the data under this endpoint is released under\n  |"
+          },
+          "response": [
+            {
+              "name": "getBanks",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "DirectLogin token={{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/connector/getBanks",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "connector",
+                    "getBanks"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Wed, 18 Mar 2026 19:59:21 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "873"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "X-Rate-Limit-Reset",
+                  "value": "1"
+                },
+                {
+                  "key": "X-Rate-Limit-Remaining",
+                  "value": "0"
+                },
+                {
+                  "key": "X-Rate-Limit-Limit",
+                  "value": "-1"
+                },
+                {
+                  "key": "ETag",
+                  "value": "e89c74bb77cfe2ea3905a03b62b721c4dc2f6243eb068a2ce253f553ec1b52d7"
+                },
+                {
+                  "key": "Correlation-Id",
+                  "value": "fc15cdc7-9337-4e9b-8bdc-962bd6936ae7"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private, no-store"
+                },
+                {
+                  "key": "Pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "Expires",
+                  "value": "Wed, 18 Mar 2026 19:59:21 GMT"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"inboundAdapterCallContext\": {\n        \"correlationId\": \"6ab63692-d3ba-4ce8-bed0-0c33a394b816\"\n    },\n    \"status\": {\n        \"errorCode\": \"\",\n        \"backendMessages\": [\n            {\n                \"source\": \"\",\n                \"status\": \"\",\n                \"errorCode\": \"\",\n                \"text\": \"\"\n            }\n        ]\n    },\n    \"data\": [\n        {\n            \"bankId\": {\n                \"value\": \"workshop-bank-001\"\n            },\n            \"shortName\": \"Workshop Bank\",\n            \"fullName\": \"Workshop Bank for OBP Demo\",\n            \"logoUrl\": \"https://static.openbankproject.com/images/sandbox/bank_x.png\",\n            \"websiteUrl\": \"https://workshop.openbankproject.com\",\n            \"bankRoutingScheme\": \"BIC\",\n            \"bankRoutingAddress\": \"WKSHBIC0\",\n            \"swiftBic\": \"WKSHBIC0\",\n            \"nationalIdentifier\": \"WORKSHOP001\"\n        },\n        {\n            \"bankId\": {\n                \"value\": \"test-bank-002\"\n            },\n            \"shortName\": \"Test Bank\",\n            \"fullName\": \"Test Bank for Integration\",\n            \"logoUrl\": \"https://static.openbankproject.com/images/sandbox/bank_y.png\",\n            \"websiteUrl\": \"https://testbank.example.com\",\n            \"bankRoutingScheme\": \"BIC\",\n            \"bankRoutingAddress\": \"TSTBBIC0\",\n            \"swiftBic\": \"TSTBBIC0\",\n            \"nationalIdentifier\": \"TESTBANK002\"\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "getBank",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "tests[\"Status code is 200\"] = responseCode.code === 200;"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"bankId\": {\n    \"value\": \"gh.29.uk\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/connector/getBank",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "getBank"
+              ]
+            },
+            "description": "\"getBranches\",\n\"GET\",\n\"/banks/BANK_ID/branches\",\n\"Get Bank Branches\",\ns\"\"\"Returns information about branches for a single bank specified by BANK_ID including:\n  |\n  |* Name\n  |* Address\n  |* Geo Location\n  |* License the data under this endpoint is released under\n  |"
+          },
+          "response": [
+            {
+              "name": "getBank",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "DirectLogin token={{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"bankId\": {\n    \"value\": \"gh.29.uk\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/connector/getBank",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "connector",
+                    "getBank"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Wed, 18 Mar 2026 22:45:10 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "493"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "X-Rate-Limit-Reset",
+                  "value": "1"
+                },
+                {
+                  "key": "X-Rate-Limit-Remaining",
+                  "value": "0"
+                },
+                {
+                  "key": "X-Rate-Limit-Limit",
+                  "value": "-1"
+                },
+                {
+                  "key": "ETag",
+                  "value": "c96417c6f1f437b530735ff637cacd943ef45bb8b388480db26f7199bdb36391"
+                },
+                {
+                  "key": "Correlation-Id",
+                  "value": "068c4e2c-2e9c-4d8d-ac6f-793522fe0ad3"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private, no-store"
+                },
+                {
+                  "key": "Pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "Expires",
+                  "value": "Wed, 18 Mar 2026 22:45:10 GMT"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"inboundAdapterCallContext\": {\n        \"correlationId\": \"5885d443-6419-40cb-914c-d9aa518b1156\"\n    },\n    \"status\": {\n        \"errorCode\": \"\",\n        \"backendMessages\": [\n            {\n                \"source\": \"\",\n                \"status\": \"\",\n                \"errorCode\": \"\",\n                \"text\": \"\"\n            }\n        ]\n    },\n    \"data\": {\n        \"bankId\": {\n            \"value\": \"gh.29.uk\"\n        },\n        \"shortName\": \"Mock Bank\",\n        \"fullName\": \"Mock Bank for Testing\",\n        \"logoUrl\": \"https://static.openbankproject.com/images/sandbox/bank_x.png\",\n        \"websiteUrl\": \"https://www.example.com\",\n        \"bankRoutingScheme\": \"BIC\",\n        \"bankRoutingAddress\": \"MOCKBIC0\",\n        \"swiftBic\": null,\n        \"nationalIdentifier\": null\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "getBankAccountsForUser",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "tests[\"Status code is 200\"] = responseCode.code === 200;"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"provider\": \"ETHEREUM\",\n  \"username\": \"felixsmith\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/connector/getBankAccountsForUser",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "getBankAccountsForUser"
+              ]
+            },
+            "description": "\"getBranches\",\n\"GET\",\n\"/banks/BANK_ID/branches\",\n\"Get Bank Branches\",\ns\"\"\"Returns information about branches for a single bank specified by BANK_ID including:\n  |\n  |* Name\n  |* Address\n  |* Geo Location\n  |* License the data under this endpoint is released under\n  |"
+          },
+          "response": [
+            {
+              "name": "getBankAccountsForUser",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "DirectLogin token={{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"provider\": \"ETHEREUM\",\n  \"username\": \"felixsmith\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/connector/getBankAccountsForUser",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "connector",
+                    "getBankAccountsForUser"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Wed, 18 Mar 2026 19:52:39 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1084"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "X-Rate-Limit-Reset",
+                  "value": "1"
+                },
+                {
+                  "key": "X-Rate-Limit-Remaining",
+                  "value": "0"
+                },
+                {
+                  "key": "X-Rate-Limit-Limit",
+                  "value": "-1"
+                },
+                {
+                  "key": "ETag",
+                  "value": "f134e36e5d3fb2c206b49a151fd2db293548cb70963e79471aa42445aa9c68f8"
+                },
+                {
+                  "key": "Correlation-Id",
+                  "value": "85a4e2c2-32da-4337-95d7-e85a7ca951e3"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private, no-store"
+                },
+                {
+                  "key": "Pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "Expires",
+                  "value": "Wed, 18 Mar 2026 19:52:39 GMT"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"inboundAdapterCallContext\": {\n        \"correlationId\": \"50d94935-a969-4ccd-aac3-79efa7dd37a8\"\n    },\n    \"status\": {\n        \"errorCode\": \"\",\n        \"backendMessages\": [\n            {\n                \"source\": \"\",\n                \"status\": \"\",\n                \"errorCode\": \"\",\n                \"text\": \"\"\n            }\n        ]\n    },\n    \"data\": [\n        {\n            \"bankId\": \"workshop-bank-001\",\n            \"branchId\": \"branch-001\",\n            \"accountId\": \"acc-001\",\n            \"accountNumber\": \"acc-001\",\n            \"accountType\": \"CURRENT\",\n            \"balanceAmount\": \"5000.00\",\n            \"balanceCurrency\": \"EUR\",\n            \"owners\": [\n                \"felixsmith\"\n            ],\n            \"viewsToGenerate\": [\n                \"owner\"\n            ],\n            \"bankRoutingScheme\": \"IBAN\",\n            \"bankRoutingAddress\": \"DE89370400440532013000\",\n            \"branchRoutingScheme\": \"BRANCH_CODE\",\n            \"branchRoutingAddress\": \"001\",\n            \"accountRoutingScheme\": \"IBAN\",\n            \"accountRoutingAddress\": \"DE89370400440532013000\"\n        },\n        {\n            \"bankId\": \"workshop-bank-001\",\n            \"branchId\": \"branch-001\",\n            \"accountId\": \"acc-002\",\n            \"accountNumber\": \"acc-002\",\n            \"accountType\": \"CURRENT\",\n            \"balanceAmount\": \"3000.00\",\n            \"balanceCurrency\": \"EUR\",\n            \"owners\": [\n                \"felixsmith\"\n            ],\n            \"viewsToGenerate\": [\n                \"owner\"\n            ],\n            \"bankRoutingScheme\": \"IBAN\",\n            \"bankRoutingAddress\": \"DE89370400440532013001\",\n            \"branchRoutingScheme\": \"BRANCH_CODE\",\n            \"branchRoutingAddress\": \"001\",\n            \"accountRoutingScheme\": \"IBAN\",\n            \"accountRoutingAddress\": \"DE89370400440532013001\"\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "getBankAccounts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "tests[\"Status code is 200\"] = responseCode.code === 200;"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"bankIdAccountIds\": [\n    {\n      \"bankId\": {\n        \"value\": \"workshop-bank-001\"\n      },\n      \"accountId\": {\n        \"value\": \"acc-001\"\n      }\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/connector/getBankAccounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "getBankAccounts"
+              ]
+            },
+            "description": "\"getBranches\",\n\"GET\",\n\"/banks/BANK_ID/branches\",\n\"Get Bank Branches\",\ns\"\"\"Returns information about branches for a single bank specified by BANK_ID including:\n  |\n  |* Name\n  |* Address\n  |* Geo Location\n  |* License the data under this endpoint is released under\n  |"
+          },
+          "response": [
+            {
+              "name": "getBankAccounts",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "DirectLogin token={{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"bankIdAccountIds\": [\n    {\n      \"bankId\": {\n        \"value\": \"workshop-bank-001\"\n      },\n      \"accountId\": {\n        \"value\": \"acc-001\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/connector/getBankAccounts",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "connector",
+                    "getBankAccounts"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Wed, 18 Mar 2026 19:57:50 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "598"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "X-Rate-Limit-Reset",
+                  "value": "1"
+                },
+                {
+                  "key": "X-Rate-Limit-Remaining",
+                  "value": "0"
+                },
+                {
+                  "key": "X-Rate-Limit-Limit",
+                  "value": "-1"
+                },
+                {
+                  "key": "ETag",
+                  "value": "d5c877f0b580964aed67e94152f68771e47d632cbaeb32fe16f58b82d979fad9"
+                },
+                {
+                  "key": "Correlation-Id",
+                  "value": "392373a8-f8e2-4e7c-8ec3-412cf05f3cfd"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private, no-store"
+                },
+                {
+                  "key": "Pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "Expires",
+                  "value": "Wed, 18 Mar 2026 19:57:50 GMT"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"inboundAdapterCallContext\": {\n        \"correlationId\": \"2a939e5b-6f66-4017-9206-146c75bf1daf\"\n    },\n    \"status\": {\n        \"errorCode\": \"\",\n        \"backendMessages\": [\n            {\n                \"source\": \"\",\n                \"status\": \"\",\n                \"errorCode\": \"\",\n                \"text\": \"\"\n            }\n        ]\n    },\n    \"data\": [\n        {\n            \"accountId\": {\n                \"value\": \"acc-001\"\n            },\n            \"accountType\": \"CURRENT\",\n            \"balance\": \"5000.00\",\n            \"currency\": \"EUR\",\n            \"name\": \"Alice Workshop Account\",\n            \"label\": \"Alice Workshop Account\",\n            \"number\": \"acc-001\",\n            \"bankId\": {\n                \"value\": \"workshop-bank-001\"\n            },\n            \"lastUpdate\": \"2024-03-18T00:00:00Z\",\n            \"branchId\": \"branch-001\",\n            \"accountRoutings\": [\n                {\n                    \"scheme\": \"IBAN\",\n                    \"address\": \"DE89370400440532013000\"\n                }\n            ],\n            \"accountRules\": [],\n            \"accountHolder\": null,\n            \"attributes\": []\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "checkBankAccountExists",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "tests[\"Status code is 200\"] = responseCode.code === 200;"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"bankId\": {\n    \"value\": \"workshop-bank-001\"\n  },\n  \"accountId\": {\n    \"value\": \"acc-001\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/connector/checkBankAccountExists",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "checkBankAccountExists"
+              ]
+            },
+            "description": "\"getBranches\",\n\"GET\",\n\"/banks/BANK_ID/branches\",\n\"Get Bank Branches\",\ns\"\"\"Returns information about branches for a single bank specified by BANK_ID including:\n  |\n  |* Name\n  |* Address\n  |* Geo Location\n  |* License the data under this endpoint is released under\n  |"
+          },
+          "response": [
+            {
+              "name": "checkBankAccountExists",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "DirectLogin token={{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"bankId\": {\n    \"value\": \"workshop-bank-001\"\n  },\n  \"accountId\": {\n    \"value\": \"acc-001\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/connector/checkBankAccountExists",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "connector",
+                    "checkBankAccountExists"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Wed, 18 Mar 2026 22:27:30 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "576"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "X-Rate-Limit-Reset",
+                  "value": "1"
+                },
+                {
+                  "key": "X-Rate-Limit-Remaining",
+                  "value": "0"
+                },
+                {
+                  "key": "X-Rate-Limit-Limit",
+                  "value": "-1"
+                },
+                {
+                  "key": "ETag",
+                  "value": "431b13b626be2bac81a82485c80f96d56d6e4aadb485d0f3d0ca5bd633d6d0b9"
+                },
+                {
+                  "key": "Correlation-Id",
+                  "value": "78d473f4-7ba5-4fcc-b201-ecc27f42ed37"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private, no-store"
+                },
+                {
+                  "key": "Pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "Expires",
+                  "value": "Wed, 18 Mar 2026 22:27:30 GMT"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"inboundAdapterCallContext\": {\n        \"correlationId\": \"6373ff06-ff48-4967-94ee-f6295d8a24c0\"\n    },\n    \"status\": {\n        \"errorCode\": \"\",\n        \"backendMessages\": [\n            {\n                \"source\": \"\",\n                \"status\": \"\",\n                \"errorCode\": \"\",\n                \"text\": \"\"\n            }\n        ]\n    },\n    \"data\": {\n        \"accountId\": {\n            \"value\": \"acc-001\"\n        },\n        \"accountType\": \"CURRENT\",\n        \"balance\": \"5000.00\",\n        \"currency\": \"EUR\",\n        \"name\": \"Alice Workshop Account\",\n        \"label\": null,\n        \"number\": \"acc-001\",\n        \"bankId\": {\n            \"value\": \"workshop-bank-001\"\n        },\n        \"lastUpdate\": \"2024-03-18T00:00:00Z\",\n        \"branchId\": \"branch-001\",\n        \"accountRoutings\": [\n            {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE89370400440532013000\"\n            }\n        ],\n        \"accountRules\": [],\n        \"accountHolder\": null,\n        \"attributes\": []\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "makePaymentv210",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "tests[\"Status code is 200\"] = responseCode.code === 200;"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"fromAccount\": {\n    \"accountId\": {\n      \"value\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\"\n    },\n    \"accountType\": \"AC\",\n    \"balance\": \"10\",\n    \"currency\": \"EUR\",\n    \"name\": \"bankAccount name string\",\n    \"label\": \"My Account\",\n    \"number\": \"bankAccount number string\",\n    \"bankId\": {\n      \"value\": \"gh.29.uk\"\n    },\n    \"lastUpdate\": \"2018-03-09T00:00:00Z\",\n    \"branchId\": \"DERBY6\",\n    \"accountRoutings\": [\n      {\n        \"scheme\": \"IBAN\",\n        \"address\": \"DE91 1000 0000 0123 4567 89\"\n      }\n    ],\n    \"accountRules\": [\n      {\n        \"scheme\": \"AccountRule scheme string\",\n        \"value\": \"AccountRule value string\"\n      }\n    ],\n    \"accountHolder\": \"bankAccount accountHolder string\",\n    \"attributes\": [\n      {\n        \"name\": \"STATUS\",\n        \"type\": \"STRING\",\n        \"value\": \"closed\"\n      }\n    ]\n  },\n  \"toAccount\": {\n    \"accountId\": {\n      \"value\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\"\n    },\n    \"accountType\": \"AC\",\n    \"balance\": \"10\",\n    \"currency\": \"EUR\",\n    \"name\": \"bankAccount name string\",\n    \"label\": \"My Account\",\n    \"number\": \"bankAccount number string\",\n    \"bankId\": {\n      \"value\": \"gh.29.uk\"\n    },\n    \"lastUpdate\": \"2018-03-09T00:00:00Z\",\n    \"branchId\": \"DERBY6\",\n    \"accountRoutings\": [\n      {\n        \"scheme\": \"IBAN\",\n        \"address\": \"DE91 1000 0000 0123 4567 89\"\n      }\n    ],\n    \"accountRules\": [\n      {\n        \"scheme\": \"AccountRule scheme string\",\n        \"value\": \"AccountRule value string\"\n      }\n    ],\n    \"accountHolder\": \"bankAccount accountHolder string\",\n    \"attributes\": [\n      {\n        \"name\": \"STATUS\",\n        \"type\": \"STRING\",\n        \"value\": \"closed\"\n      }\n    ]\n  },\n  \"transactionRequestId\": {\n    \"value\": \"8138a7e4-6d02-40e3-a129-0b2bf89de9f1\"\n  },\n  \"transactionRequestCommonBody\": {\n    \"value\": {\n      \"currency\": \"EUR\",\n      \"amount\": \"10.12\"\n    },\n    \"description\": \"Description of the object. Maximum length is 2000. It can be any characters here.\"\n  },\n  \"amount\": \"10.12\",\n  \"description\": \"Description of the object. Maximum length is 2000. It can be any characters here.\",\n  \"transactionRequestType\": {\n    \"value\": \"SEPA\"\n  },\n  \"chargePolicy\": \"SHARED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/connector/makePaymentv210",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "makePaymentv210"
+              ]
+            },
+            "description": "\"getBranches\",\n\"GET\",\n\"/banks/BANK_ID/branches\",\n\"Get Bank Branches\",\ns\"\"\"Returns information about branches for a single bank specified by BANK_ID including:\n  |\n  |* Name\n  |* Address\n  |* Geo Location\n  |* License the data under this endpoint is released under\n  |"
+          },
+          "response": [
+            {
+              "name": "makePaymentv210",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "DirectLogin token={{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"fromAccount\": {\n    \"accountId\": {\n      \"value\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\"\n    },\n    \"accountType\": \"AC\",\n    \"balance\": \"10\",\n    \"currency\": \"EUR\",\n    \"name\": \"bankAccount name string\",\n    \"label\": \"My Account\",\n    \"number\": \"bankAccount number string\",\n    \"bankId\": {\n      \"value\": \"gh.29.uk\"\n    },\n    \"lastUpdate\": \"2018-03-09T00:00:00Z\",\n    \"branchId\": \"DERBY6\",\n    \"accountRoutings\": [\n      {\n        \"scheme\": \"IBAN\",\n        \"address\": \"DE91 1000 0000 0123 4567 89\"\n      }\n    ],\n    \"accountRules\": [\n      {\n        \"scheme\": \"AccountRule scheme string\",\n        \"value\": \"AccountRule value string\"\n      }\n    ],\n    \"accountHolder\": \"bankAccount accountHolder string\",\n    \"attributes\": [\n      {\n        \"name\": \"STATUS\",\n        \"type\": \"STRING\",\n        \"value\": \"closed\"\n      }\n    ]\n  },\n  \"toAccount\": {\n    \"accountId\": {\n      \"value\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\"\n    },\n    \"accountType\": \"AC\",\n    \"balance\": \"10\",\n    \"currency\": \"EUR\",\n    \"name\": \"bankAccount name string\",\n    \"label\": \"My Account\",\n    \"number\": \"bankAccount number string\",\n    \"bankId\": {\n      \"value\": \"gh.29.uk\"\n    },\n    \"lastUpdate\": \"2018-03-09T00:00:00Z\",\n    \"branchId\": \"DERBY6\",\n    \"accountRoutings\": [\n      {\n        \"scheme\": \"IBAN\",\n        \"address\": \"DE91 1000 0000 0123 4567 89\"\n      }\n    ],\n    \"accountRules\": [\n      {\n        \"scheme\": \"AccountRule scheme string\",\n        \"value\": \"AccountRule value string\"\n      }\n    ],\n    \"accountHolder\": \"bankAccount accountHolder string\",\n    \"attributes\": [\n      {\n        \"name\": \"STATUS\",\n        \"type\": \"STRING\",\n        \"value\": \"closed\"\n      }\n    ]\n  },\n  \"transactionRequestId\": {\n    \"value\": \"8138a7e4-6d02-40e3-a129-0b2bf89de9f1\"\n  },\n  \"transactionRequestCommonBody\": {\n    \"value\": {\n      \"currency\": \"EUR\",\n      \"amount\": \"10.12\"\n    },\n    \"description\": \"Description of the object. Maximum length is 2000. It can be any characters here.\"\n  },\n  \"amount\": \"10.12\",\n  \"description\": \"Description of the object. Maximum length is 2000. It can be any characters here.\",\n  \"transactionRequestType\": {\n    \"value\": \"SEPA\"\n  },\n  \"chargePolicy\": \"SHARED\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/connector/makePaymentv210",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "connector",
+                    "makePaymentv210"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Wed, 18 Mar 2026 22:54:46 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "228"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "X-Rate-Limit-Reset",
+                  "value": "1"
+                },
+                {
+                  "key": "X-Rate-Limit-Remaining",
+                  "value": "0"
+                },
+                {
+                  "key": "X-Rate-Limit-Limit",
+                  "value": "-1"
+                },
+                {
+                  "key": "ETag",
+                  "value": "9d0642009cf8e3fc35531a30073cf426411db8620ac5e2b924bbaf81a3c78eb2"
+                },
+                {
+                  "key": "Correlation-Id",
+                  "value": "0707db34-0e97-466b-9b4f-a906af9e7a7f"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private, no-store"
+                },
+                {
+                  "key": "Pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "Expires",
+                  "value": "Wed, 18 Mar 2026 22:54:46 GMT"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"inboundAdapterCallContext\": {\n        \"correlationId\": \"5a124a8a-e340-42bc-a1b8-b0849382aa96\"\n    },\n    \"status\": {\n        \"errorCode\": \"\",\n        \"backendMessages\": [\n            {\n                \"source\": \"\",\n                \"status\": \"\",\n                \"errorCode\": \"\",\n                \"text\": \"\"\n            }\n        ]\n    },\n    \"data\": {\n        \"value\": \"tx-workshop-1773874486412\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "getTransactions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "tests[\"Status code is 200\"] = responseCode.code === 200;"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"bankId\": {\n    \"value\": \"workshop-bank-001\"\n  },\n  \"accountId\": {\n    \"value\": \"acc-001\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/connector/getTransactions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "getTransactions"
+              ]
+            },
+            "description": "\"getBranches\",\n\"GET\",\n\"/banks/BANK_ID/branches\",\n\"Get Bank Branches\",\ns\"\"\"Returns information about branches for a single bank specified by BANK_ID including:\n  |\n  |* Name\n  |* Address\n  |* Geo Location\n  |* License the data under this endpoint is released under\n  |"
+          },
+          "response": [
+            {
+              "name": "getTransactions",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "DirectLogin token={{token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"outboundAdapterCallContext\": {\n    \"correlationId\": \"1flssoftxq0cr1nssr68u0mioj\",\n    \"sessionId\": \"b4e0352a-9a0f-4bfa-b30b-9003aa467f50\",\n    \"consumerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n    \"generalContext\": [\n      {\n        \"key\": \"CustomerNumber\",\n        \"value\": \"5987953\"\n      }\n    ],\n    \"outboundAdapterAuthInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"outboundAdapterConsenterInfo\": {\n      \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n      \"username\": \"felixsmith\",\n      \"linkedCustomers\": [\n        {\n          \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n          \"customerNumber\": \"5987953\",\n          \"legalName\": \"Eveline Tripman\"\n        }\n      ],\n      \"userAuthContext\": [\n        {\n          \"key\": \"CustomerNumber\",\n          \"value\": \"5987953\"\n        }\n      ],\n      \"authViews\": [\n        {\n          \"view\": {\n            \"id\": \"owner\",\n            \"name\": \"owner\",\n            \"description\": \"This view is for the owner for the account.\"\n          },\n          \"account\": {\n            \"id\": \"8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0\",\n            \"accountRoutings\": [\n              {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE91 1000 0000 0123 4567 89\"\n              }\n            ],\n            \"customerOwners\": [\n              {\n                \"bankId\": \"gh.29.uk\",\n                \"customerId\": \"7uy8a7e4-6d02-40e3-a129-0b2bf89de8uh\",\n                \"customerNumber\": \"5987953\",\n                \"legalName\": \"Eveline Tripman\",\n                \"dateOfBirth\": \"2018-03-09T00:00:00Z\"\n              }\n            ],\n            \"userOwners\": [\n              {\n                \"userId\": \"9ca9a7e4-6d02-40e3-a129-0b2bf89de9b1\",\n                \"emailAddress\": \"felixsmith@example.com\",\n                \"name\": \"felixsmith\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  },\n  \"bankId\": {\n    \"value\": \"workshop-bank-001\"\n  },\n  \"accountId\": {\n    \"value\": \"acc-001\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/connector/getTransactions",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "connector",
+                    "getTransactions"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Date",
+                  "value": "Wed, 18 Mar 2026 22:54:55 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "3539"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "X-Rate-Limit-Reset",
+                  "value": "1"
+                },
+                {
+                  "key": "X-Rate-Limit-Remaining",
+                  "value": "0"
+                },
+                {
+                  "key": "X-Rate-Limit-Limit",
+                  "value": "-1"
+                },
+                {
+                  "key": "ETag",
+                  "value": "d6d5a53c64dc3430783143b51f0546fbd564e95180b485e70ca80c5ea4fefaac"
+                },
+                {
+                  "key": "Correlation-Id",
+                  "value": "e95215b2-2c96-4b31-8420-5455eee3c0c5"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private, no-store"
+                },
+                {
+                  "key": "Pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "Expires",
+                  "value": "Wed, 18 Mar 2026 22:54:55 GMT"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"inboundAdapterCallContext\": {\n        \"correlationId\": \"7e33c805-8657-4163-afce-7cfefbc4d89a\"\n    },\n    \"status\": {\n        \"errorCode\": \"\",\n        \"backendMessages\": [\n            {\n                \"source\": \"\",\n                \"status\": \"\",\n                \"errorCode\": \"\",\n                \"text\": \"\"\n            }\n        ]\n    },\n    \"data\": [\n        {\n            \"uuid\": \"uuid-tx-001\",\n            \"id\": {\n                \"value\": \"tx-001\"\n            },\n            \"thisAccount\": {\n                \"accountId\": {\n                    \"value\": \"acc-001\"\n                },\n                \"accountType\": \"CURRENT\",\n                \"balance\": \"4950.00\",\n                \"currency\": \"EUR\",\n                \"name\": \"Alice Workshop Account\",\n                \"label\": \"Alice Workshop Account\",\n                \"number\": \"acc-001\",\n                \"bankId\": {\n                    \"value\": \"workshop-bank-001\"\n                },\n                \"lastUpdate\": \"2025-01-14T00:00:00Z\",\n                \"branchId\": \"branch-001\",\n                \"accountRoutings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE89370400440532013000\"\n                    }\n                ],\n                \"accountRules\": [],\n                \"accountHolder\": \"Alice\",\n                \"attributes\": []\n            },\n            \"otherAccount\": {\n                \"nationalIdentifier\": \"MERCHANT001\",\n                \"kind\": \"DEBIT\",\n                \"counterpartyId\": \"cp-merchant-001\",\n                \"counterpartyName\": \"Online Shop GmbH\",\n                \"thisBankId\": {\n                    \"value\": \"workshop-bank-001\"\n                },\n                \"thisAccountId\": {\n                    \"value\": \"acc-001\"\n                },\n                \"otherBankRoutingScheme\": \"BIC\",\n                \"otherBankRoutingAddress\": \"SHOPBIC0\",\n                \"otherAccountRoutingScheme\": \"IBAN\",\n                \"otherAccountRoutingAddress\": \"DE12345678901234567890\",\n                \"otherAccountProvider\": \"OBP\",\n                \"isBeneficiary\": true\n            },\n            \"transactionType\": \"DEBIT\",\n            \"amount\": \"50.00\",\n            \"currency\": \"EUR\",\n            \"description\": \"Online purchase - Online Shop GmbH\",\n            \"startDate\": \"2025-01-14T10:30:00Z\",\n            \"finishDate\": \"2025-01-14T10:30:05Z\",\n            \"balance\": \"4950.00\",\n            \"status\": \"COMPLETED\"\n        },\n        {\n            \"uuid\": \"uuid-tx-002\",\n            \"id\": {\n                \"value\": \"tx-002\"\n            },\n            \"thisAccount\": {\n                \"accountId\": {\n                    \"value\": \"acc-001\"\n                },\n                \"accountType\": \"CURRENT\",\n                \"balance\": \"5000.00\",\n                \"currency\": \"EUR\",\n                \"name\": \"Alice Workshop Account\",\n                \"label\": \"Alice Workshop Account\",\n                \"number\": \"acc-001\",\n                \"bankId\": {\n                    \"value\": \"workshop-bank-001\"\n                },\n                \"lastUpdate\": \"2025-01-14T00:00:00Z\",\n                \"branchId\": \"branch-001\",\n                \"accountRoutings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE89370400440532013000\"\n                    }\n                ],\n                \"accountRules\": [],\n                \"accountHolder\": \"Alice\",\n                \"attributes\": []\n            },\n            \"otherAccount\": {\n                \"nationalIdentifier\": \"EMPLOYER001\",\n                \"kind\": \"CREDIT\",\n                \"counterpartyId\": \"cp-employer-001\",\n                \"counterpartyName\": \"Employer Corp AG\",\n                \"thisBankId\": {\n                    \"value\": \"workshop-bank-001\"\n                },\n                \"thisAccountId\": {\n                    \"value\": \"acc-001\"\n                },\n                \"otherBankRoutingScheme\": \"BIC\",\n                \"otherBankRoutingAddress\": \"EMPLBIC0\",\n                \"otherAccountRoutingScheme\": \"IBAN\",\n                \"otherAccountRoutingAddress\": \"DE98765432109876543210\",\n                \"otherAccountProvider\": \"OBP\",\n                \"isBeneficiary\": false\n            },\n            \"transactionType\": \"CREDIT\",\n            \"amount\": \"3000.00\",\n            \"currency\": \"EUR\",\n            \"description\": \"Monthly salary - Employer Corp AG\",\n            \"startDate\": \"2025-01-13T09:00:00Z\",\n            \"finishDate\": \"2025-01-13T09:00:01Z\",\n            \"balance\": \"5000.00\",\n            \"status\": \"COMPLETED\"\n        },\n        {\n            \"uuid\": \"uuid-tx-003\",\n            \"id\": {\n                \"value\": \"tx-003\"\n            },\n            \"thisAccount\": {\n                \"accountId\": {\n                    \"value\": \"acc-001\"\n                },\n                \"accountType\": \"CURRENT\",\n                \"balance\": \"2000.00\",\n                \"currency\": \"EUR\",\n                \"name\": \"Alice Workshop Account\",\n                \"label\": \"Alice Workshop Account\",\n                \"number\": \"acc-001\",\n                \"bankId\": {\n                    \"value\": \"workshop-bank-001\"\n                },\n                \"lastUpdate\": \"2025-01-14T00:00:00Z\",\n                \"branchId\": \"branch-001\",\n                \"accountRoutings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE89370400440532013000\"\n                    }\n                ],\n                \"accountRules\": [],\n                \"accountHolder\": \"Alice\",\n                \"attributes\": []\n            },\n            \"otherAccount\": {\n                \"nationalIdentifier\": \"COFFEE001\",\n                \"kind\": \"DEBIT\",\n                \"counterpartyId\": \"cp-coffee-001\",\n                \"counterpartyName\": \"Brew & Co\",\n                \"thisBankId\": {\n                    \"value\": \"workshop-bank-001\"\n                },\n                \"thisAccountId\": {\n                    \"value\": \"acc-001\"\n                },\n                \"otherBankRoutingScheme\": \"BIC\",\n                \"otherBankRoutingAddress\": \"BREWBIC0\",\n                \"otherAccountRoutingScheme\": \"IBAN\",\n                \"otherAccountRoutingAddress\": \"DE11223344556677889900\",\n                \"otherAccountProvider\": \"OBP\",\n                \"isBeneficiary\": true\n            },\n            \"transactionType\": \"DEBIT\",\n            \"amount\": \"25.50\",\n            \"currency\": \"EUR\",\n            \"description\": \"Coffee subscription - Brew & Co\",\n            \"startDate\": \"2025-01-12T08:15:00Z\",\n            \"finishDate\": \"2025-01-12T08:15:02Z\",\n            \"balance\": \"2000.00\",\n            \"status\": \"COMPLETED\"\n        }\n    ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Get Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200 || pm.response.code === 201) {",
+              "  const jsonData = pm.response.json();",
+              "  if (jsonData.token) {",
+              "    pm.environment.set('token', jsonData.token);",
+              "    console.log('Token saved:', jsonData.token);",
+              "  }",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "DirectLogin",
+            "value": "username={{username}},password={{password}},consumer_key={{consumer_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/my/logins/direct",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "my",
+            "logins",
+            "direct"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create MethodRouting",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "{{K1}}",
+            "value": "{{V1}}",
+            "type": "text"
+          },
+          {
+            "key": "{{K2}}",
+            "value": "{{V2}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"is_bank_id_exact_match\": false,\n    \"method_name\": \"getTransaction\",\n    \"connector_name\": \"rabbitmq_vOct2024\",\n    \"bank_id_pattern\": \".*\",\n    \"parameters\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url-400}}/management/method_routings",
+          "host": [
+            "{{url-400}}"
+          ],
+          "path": [
+            "management",
+            "method_routings"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "get MethodRoutings",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "{{K1}}",
+            "value": "{{V1}}",
+            "type": "text"
+          },
+          {
+            "key": "{{K2}}",
+            "value": "{{V2}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"is_bank_id_exact_match\": false,\n    \"method_name\": \"getBankAccounts\",\n    \"connector_name\": \"rabbitmq_vOct2024\",\n    \"bank_id_pattern\": \".*\",\n    \"parameters\": []\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url-400}}/management/method_routings",
+          "host": [
+            "{{url-400}}"
+          ],
+          "path": [
+            "management",
+            "method_routings"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "get MethodRoutings",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "{{K1}}",
+                "value": "{{V1}}",
+                "type": "text"
+              },
+              {
+                "key": "{{K2}}",
+                "value": "{{V2}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"is_bank_id_exact_match\": false,\n    \"method_name\": \"getBankAccounts\",\n    \"connector_name\": \"rabbitmq_vOct2024\",\n    \"bank_id_pattern\": \".*\",\n    \"parameters\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url-400}}/management/method_routings",
+              "host": [
+                "{{url-400}}"
+              ],
+              "path": [
+                "management",
+                "method_routings"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Wed, 18 Mar 2026 23:31:07 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Content-Length",
+              "value": "2022"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "X-Rate-Limit-Reset",
+              "value": "1"
+            },
+            {
+              "key": "X-Rate-Limit-Remaining",
+              "value": "0"
+            },
+            {
+              "key": "X-Rate-Limit-Limit",
+              "value": "-1"
+            },
+            {
+              "key": "ETag",
+              "value": "6648d84a6cbefcee49a15ab49e4cd7b8093f30a7fd7eeff4a6744cba33bbd4b9"
+            },
+            {
+              "key": "Correlation-Id",
+              "value": "e685d875-c62c-42f9-a311-a456ed810ec9"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, private, no-store"
+            },
+            {
+              "key": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "Expires",
+              "value": "Wed, 18 Mar 2026 23:31:07 GMT"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"method_routings\": [\n        {\n            \"method_name\": \"checkBankAccountExists\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"9da6e3fd-a3ee-41d7-af88-00487997d4e2\"\n        },\n        {\n            \"method_name\": \"getAdapterInfo\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"1f0f8951-33de-4362-a8b3-2a989c625fd4\"\n        },\n        {\n            \"method_name\": \"getBank\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"47f38753-c7fc-4a49-8502-90c32f4c5ef9\"\n        },\n        {\n            \"method_name\": \"getBankAccounts\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"219e5708-9494-425b-8251-ac2c5dbef500\"\n        },\n        {\n            \"method_name\": \"getBankAccountsForUser\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"37364297-39cd-41d4-9de4-d4d8c6a4a5e4\"\n        },\n        {\n            \"method_name\": \"getBanks\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"c880625a-edc9-4e81-8f1b-289c3a286f2c\"\n        },\n        {\n            \"method_name\": \"getCoreBankAccounts\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"62d0a449-a436-40ea-852e-19db9f136347\"\n        },\n        {\n            \"method_name\": \"getTransaction\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"7b8ba565-9a75-4e57-a42d-0b7fef4215bc\"\n        },\n        {\n            \"method_name\": \"getTransactions\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"05de1907-0a96-4f3a-a07e-bbd7c561b6b5\"\n        },\n        {\n            \"method_name\": \"makePaymentv210\",\n            \"connector_name\": \"rabbitmq_vOct2024\",\n            \"is_bank_id_exact_match\": false,\n            \"bank_id_pattern\": \".*\",\n            \"parameters\": [],\n            \"method_routing_id\": \"1dc85845-fa61-4d15-a1da-ec86c401b88a\"\n        }\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Banks",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/obp/v5.0.0/banks",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "obp",
+            "v5.0.0",
+            "banks"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Bank",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/obp/v5.0.0/banks/workshop-bank-001",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "obp",
+            "v5.0.0",
+            "banks",
+            "workshop-bank-001"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get User (Current)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/obp/v6.0.0/users/current",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "obp",
+            "v6.0.0",
+            "users",
+            "current"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add Entitlement",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "tests[\"Status code is 200\"] = responseCode.code === 200;"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "{{V2}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"bank_id\": \"\",\n    \"role_name\": \"CanGetConnectorEndpoint\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/obp/v6.0.0/users/0d7a16d6-b6e0-4aef-b58c-b9f7556519b1/entitlements",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "obp",
+            "v6.0.0",
+            "users",
+            "0d7a16d6-b6e0-4aef-b58c-b9f7556519b1",
+            "entitlements"
+          ]
+        },
+        "description": "\"getBranches\",\n\"GET\",\n\"/banks/BANK_ID/branches\",\n\"Get Bank Branches\",\ns\"\"\"Returns information about branches for a single bank specified by BANK_ID including:\n  |\n  |* Name\n  |* Address\n  |* Geo Location\n  |* License the data under this endpoint is released under\n  |"
+      },
+      "response": []
+    },
+    {
+      "name": "Refresch User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/obp/v6.0.0/users/0d7a16d6-b6e0-4aef-b58c-b9f7556519b1/refresh",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "obp",
+            "v6.0.0",
+            "users",
+            "0d7a16d6-b6e0-4aef-b58c-b9f7556519b1",
+            "refresh"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Accounts at Bank",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/obp/v6.0.0/banks/{{bank_id}}/accounts",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "obp",
+            "v6.0.0",
+            "banks",
+            "{{bank_id}}",
+            "accounts"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Accounts at Bank",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/obp/v6.0.0/banks/{{bank_id}}/accounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "obp",
+                "v6.0.0",
+                "banks",
+                "{{bank_id}}",
+                "accounts"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Wed, 18 Mar 2026 20:05:11 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Content-Length",
+              "value": "336"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "X-Rate-Limit-Reset",
+              "value": "1"
+            },
+            {
+              "key": "X-Rate-Limit-Remaining",
+              "value": "0"
+            },
+            {
+              "key": "X-Rate-Limit-Limit",
+              "value": "-1"
+            },
+            {
+              "key": "ETag",
+              "value": "ec1f9781f6b335821ddf7a7bc5347374be6d95fd0b9a1068c3b4932ba741d36f"
+            },
+            {
+              "key": "Correlation-Id",
+              "value": "9a0f84c8-e700-448e-b390-9abcbfb71300"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, private, no-store"
+            },
+            {
+              "key": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "Expires",
+              "value": "Wed, 18 Mar 2026 20:05:11 GMT"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"accounts\": [\n        {\n            \"account_id\": \"acc-001\",\n            \"bank_id\": \"workshop-bank-001\",\n            \"label\": \"Alice Workshop Account\",\n            \"views_available\": [\n                {\n                    \"id\": \"owner\",\n                    \"short_name\": \"Owner\",\n                    \"is_public\": false\n                }\n            ]\n        },\n        {\n            \"account_id\": \"acc-002\",\n            \"bank_id\": \"workshop-bank-001\",\n            \"label\": \"Bob Workshop Account\",\n            \"views_available\": [\n                {\n                    \"id\": \"owner\",\n                    \"short_name\": \"Owner\",\n                    \"is_public\": false\n                }\n            ]\n        }\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create Transaction Request (SANDBOX_TAN)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"to\": {\n    \"bank_id\": \"workshop-bank-001\",\n    \"account_id\": \"acc-002\"\n  },\n  \"value\": {\n    \"currency\": \"EUR\",\n    \"amount\": \"10.00\"\n  },\n  \"description\": \"Workshop test payment\",\n  \"charge_policy\": \"SHARED\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/obp/v5.0.0/banks/{{bank_id}}/accounts/acc-001/owner/transaction-request-types/SANDBOX_TAN/transaction-requests",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "obp",
+            "v5.0.0",
+            "banks",
+            "{{bank_id}}",
+            "accounts",
+            "acc-001",
+            "owner",
+            "transaction-request-types",
+            "SANDBOX_TAN",
+            "transaction-requests"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Create Transaction Request (SANDBOX_TAN)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": {\n    \"bank_id\": \"workshop-bank-001\",\n    \"account_id\": \"acc-002\"\n  },\n  \"value\": {\n    \"currency\": \"EUR\",\n    \"amount\": \"10.00\"\n  },\n  \"description\": \"Workshop test payment\",\n  \"charge_policy\": \"SHARED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/obp/v5.0.0/banks/{{bank_id}}/accounts/acc-001/owner/transaction-request-types/SANDBOX_TAN/transaction-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "obp",
+                "v5.0.0",
+                "banks",
+                "{{bank_id}}",
+                "accounts",
+                "acc-001",
+                "owner",
+                "transaction-request-types",
+                "SANDBOX_TAN",
+                "transaction-requests"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Wed, 18 Mar 2026 22:55:48 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Content-Length",
+              "value": "555"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "X-Rate-Limit-Reset",
+              "value": "1"
+            },
+            {
+              "key": "X-Rate-Limit-Remaining",
+              "value": "0"
+            },
+            {
+              "key": "X-Rate-Limit-Limit",
+              "value": "-1"
+            },
+            {
+              "key": "ETag",
+              "value": "60cb7fb835b985e3661d404c18f51d4910d0dc2d72e2d39e1e405daadefc61ba"
+            },
+            {
+              "key": "Correlation-Id",
+              "value": "bc115d47-ae76-4aae-befc-b9327774149f"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, private, no-store"
+            },
+            {
+              "key": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "Expires",
+              "value": "Wed, 18 Mar 2026 22:55:48 GMT"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"id\": \"03bac2d9-e86b-4f83-9298-f224003e706e\",\n    \"type\": \"SANDBOX_TAN\",\n    \"from\": {\n        \"bank_id\": \"workshop-bank-001\",\n        \"account_id\": \"acc-001\"\n    },\n    \"details\": {\n        \"to_sandbox_tan\": {\n            \"bank_id\": \"workshop-bank-001\",\n            \"account_id\": \"acc-002\"\n        },\n        \"value\": {\n            \"currency\": \"EUR\",\n            \"amount\": \"10.00\"\n        },\n        \"description\": \"Workshop test payment\"\n    },\n    \"transaction_ids\": [\n        \"tx-workshop-1773874548036\"\n    ],\n    \"status\": \"COMPLETED\",\n    \"start_date\": \"2026-03-18T22:55:48Z\",\n    \"end_date\": \"2026-03-18T22:55:48Z\",\n    \"challenge\": null,\n    \"charge\": {\n        \"summary\": \"Total charges for completed transaction\",\n        \"value\": {\n            \"currency\": \"EUR\",\n            \"amount\": \"2.0\"\n        }\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Transactions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/obp/v5.0.0/banks/{{bank_id}}/accounts/{{account_id}}/owner/transactions",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "obp",
+            "v5.0.0",
+            "banks",
+            "{{bank_id}}",
+            "accounts",
+            "{{account_id}}",
+            "owner",
+            "transactions"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Transactions",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/obp/v5.0.0/banks/{{bank_id}}/accounts/{{account_id}}/owner/transactions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "obp",
+                "v5.0.0",
+                "banks",
+                "{{bank_id}}",
+                "accounts",
+                "{{account_id}}",
+                "owner",
+                "transactions"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Wed, 18 Mar 2026 22:56:02 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Content-Length",
+              "value": "2966"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "X-Rate-Limit-Reset",
+              "value": "1"
+            },
+            {
+              "key": "X-Rate-Limit-Remaining",
+              "value": "0"
+            },
+            {
+              "key": "X-Rate-Limit-Limit",
+              "value": "-1"
+            },
+            {
+              "key": "Range",
+              "value": "items=0-50"
+            },
+            {
+              "key": "ETag",
+              "value": "f6a8a79e60406ecf9cda639834f5910a9e52e78e965fe889e2ad756516f76a03"
+            },
+            {
+              "key": "Correlation-Id",
+              "value": "55d902ba-6b49-46a9-9d94-f42a232f6bb9"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, private, no-store"
+            },
+            {
+              "key": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "Expires",
+              "value": "Wed, 18 Mar 2026 22:56:02 GMT"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"transactions\": [\n        {\n            \"id\": \"tx-001\",\n            \"this_account\": {\n                \"id\": \"acc-001\",\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"MOCKBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE89370400440532013000\"\n                    }\n                ],\n                \"holders\": [\n                    {\n                        \"name\": \"workshop.user\",\n                        \"is_alias\": false\n                    }\n                ]\n            },\n            \"other_account\": {\n                \"id\": \"cp-merchant-001\",\n                \"holder\": {\n                    \"name\": \"Online Shop GmbH\",\n                    \"is_alias\": false\n                },\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"SHOPBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE12345678901234567890\"\n                    }\n                ],\n                \"metadata\": {\n                    \"public_alias\": \"ALIAS_E1D77C\",\n                    \"private_alias\": null,\n                    \"more_info\": null,\n                    \"URL\": null,\n                    \"image_URL\": null,\n                    \"open_corporates_URL\": null,\n                    \"corporate_location\": null,\n                    \"physical_location\": null\n                }\n            },\n            \"details\": {\n                \"type\": \"DEBIT\",\n                \"description\": \"Online purchase - Online Shop GmbH\",\n                \"posted\": \"2025-01-14T10:30:00Z\",\n                \"completed\": \"2025-01-14T10:30:05Z\",\n                \"new_balance\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"4950.00\"\n                },\n                \"value\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"50.00\"\n                }\n            },\n            \"metadata\": {\n                \"narrative\": null,\n                \"comments\": [],\n                \"tags\": [],\n                \"images\": [],\n                \"where\": null\n            },\n            \"transaction_attributes\": []\n        },\n        {\n            \"id\": \"tx-002\",\n            \"this_account\": {\n                \"id\": \"acc-001\",\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"MOCKBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE89370400440532013000\"\n                    }\n                ],\n                \"holders\": [\n                    {\n                        \"name\": \"workshop.user\",\n                        \"is_alias\": false\n                    }\n                ]\n            },\n            \"other_account\": {\n                \"id\": \"cp-employer-001\",\n                \"holder\": {\n                    \"name\": \"Employer Corp AG\",\n                    \"is_alias\": false\n                },\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"EMPLBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE98765432109876543210\"\n                    }\n                ],\n                \"metadata\": {\n                    \"public_alias\": \"ALIAS_B36A9A\",\n                    \"private_alias\": null,\n                    \"more_info\": null,\n                    \"URL\": null,\n                    \"image_URL\": null,\n                    \"open_corporates_URL\": null,\n                    \"corporate_location\": null,\n                    \"physical_location\": null\n                }\n            },\n            \"details\": {\n                \"type\": \"CREDIT\",\n                \"description\": \"Monthly salary - Employer Corp AG\",\n                \"posted\": \"2025-01-13T09:00:00Z\",\n                \"completed\": \"2025-01-13T09:00:01Z\",\n                \"new_balance\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"5000.00\"\n                },\n                \"value\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"3000.00\"\n                }\n            },\n            \"metadata\": {\n                \"narrative\": null,\n                \"comments\": [],\n                \"tags\": [],\n                \"images\": [],\n                \"where\": null\n            },\n            \"transaction_attributes\": []\n        },\n        {\n            \"id\": \"tx-003\",\n            \"this_account\": {\n                \"id\": \"acc-001\",\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"MOCKBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE89370400440532013000\"\n                    }\n                ],\n                \"holders\": [\n                    {\n                        \"name\": \"workshop.user\",\n                        \"is_alias\": false\n                    }\n                ]\n            },\n            \"other_account\": {\n                \"id\": \"cp-coffee-001\",\n                \"holder\": {\n                    \"name\": \"Brew & Co\",\n                    \"is_alias\": false\n                },\n                \"bank_routing\": {\n                    \"scheme\": \"BIC\",\n                    \"address\": \"BREWBIC0\"\n                },\n                \"account_routings\": [\n                    {\n                        \"scheme\": \"IBAN\",\n                        \"address\": \"DE11223344556677889900\"\n                    }\n                ],\n                \"metadata\": {\n                    \"public_alias\": \"ALIAS_7648D7\",\n                    \"private_alias\": null,\n                    \"more_info\": null,\n                    \"URL\": null,\n                    \"image_URL\": null,\n                    \"open_corporates_URL\": null,\n                    \"corporate_location\": null,\n                    \"physical_location\": null\n                }\n            },\n            \"details\": {\n                \"type\": \"DEBIT\",\n                \"description\": \"Coffee subscription - Brew & Co\",\n                \"posted\": \"2025-01-12T08:15:00Z\",\n                \"completed\": \"2025-01-12T08:15:02Z\",\n                \"new_balance\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"2000.00\"\n                },\n                \"value\": {\n                    \"currency\": \"EUR\",\n                    \"amount\": \"25.50\"\n                }\n            },\n            \"metadata\": {\n                \"narrative\": null,\n                \"comments\": [],\n                \"tags\": [],\n                \"images\": [],\n                \"where\": null\n            },\n            \"transaction_attributes\": []\n        }\n    ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Transaction by Id",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/obp/v5.0.0/banks/{{bank_id}}/accounts/{{account_id}}/owner/transactions/tx-workshop-1773876558488/transaction",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "obp",
+            "v5.0.0",
+            "banks",
+            "{{bank_id}}",
+            "accounts",
+            "{{account_id}}",
+            "owner",
+            "transactions",
+            "tx-workshop-1773876558488",
+            "transaction"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Transaction by Id",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "DirectLogin token={{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/obp/v5.0.0/banks/{{bank_id}}/accounts/{{account_id}}/owner/transactions/tx-workshop-1773876558488/transaction",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "obp",
+                "v5.0.0",
+                "banks",
+                "{{bank_id}}",
+                "accounts",
+                "{{account_id}}",
+                "owner",
+                "transactions",
+                "tx-workshop-1773876558488",
+                "transaction"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Wed, 18 Mar 2026 23:29:32 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Content-Length",
+              "value": "981"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "X-Rate-Limit-Reset",
+              "value": "1"
+            },
+            {
+              "key": "X-Rate-Limit-Remaining",
+              "value": "0"
+            },
+            {
+              "key": "X-Rate-Limit-Limit",
+              "value": "-1"
+            },
+            {
+              "key": "ETag",
+              "value": "8e721351daad89af8d9256114a472c322448b2e7b744a41de7a26838fb3ca9a8"
+            },
+            {
+              "key": "Correlation-Id",
+              "value": "e705240f-f247-421d-b1da-e54d06d4cb57"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, private, no-store"
+            },
+            {
+              "key": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "Expires",
+              "value": "Wed, 18 Mar 2026 23:29:32 GMT"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"id\": \"tx-workshop-1773876558488\",\n    \"this_account\": {\n        \"id\": \"acc-001\",\n        \"bank_routing\": {\n            \"scheme\": null,\n            \"address\": null\n        },\n        \"account_routings\": [\n            {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE89370400440532013000\"\n            }\n        ],\n        \"holders\": [\n            {\n                \"name\": \"workshop.user\",\n                \"is_alias\": false\n            }\n        ]\n    },\n    \"other_account\": {\n        \"id\": \"cp-acc-002\",\n        \"holder\": {\n            \"name\": \"Payment Recipient\",\n            \"is_alias\": false\n        },\n        \"bank_routing\": {\n            \"scheme\": \"BIC\",\n            \"address\": \"RECIPBIC0\"\n        },\n        \"account_routings\": [\n            {\n                \"scheme\": \"IBAN\",\n                \"address\": \"DE98765432109876543210\"\n            }\n        ],\n        \"metadata\": {\n            \"public_alias\": \"ALIAS_FA4491\",\n            \"private_alias\": null,\n            \"more_info\": null,\n            \"URL\": null,\n            \"image_URL\": null,\n            \"open_corporates_URL\": null,\n            \"corporate_location\": null,\n            \"physical_location\": null\n        }\n    },\n    \"details\": {\n        \"type\": \"DEBIT\",\n        \"description\": \"Workshop test payment\",\n        \"posted\": \"2026-03-18T23:29:18Z\",\n        \"completed\": \"2026-03-18T23:29:18Z\",\n        \"new_balance\": {\n            \"currency\": \"EUR\",\n            \"amount\": \"4950.00\"\n        },\n        \"value\": {\n            \"currency\": \"EUR\",\n            \"amount\": \"10.00\"\n        }\n    },\n    \"metadata\": {\n        \"narrative\": null,\n        \"comments\": [],\n        \"tags\": [],\n        \"images\": [],\n        \"where\": null\n    },\n    \"transaction_attributes\": []\n}"
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.environment.get('token')) {",
+          "  const baseUrl = pm.environment.get('base_url') || 'http://127.0.0.1:8080';",
+          "  const username = pm.environment.get('username');",
+          "  const password = pm.environment.get('password');",
+          "  const consumerKey = pm.environment.get('consumer_key');",
+          "  ",
+          "  if (username && password && consumerKey) {",
+          "    pm.sendRequest({",
+          "      url: baseUrl + '/my/logins/direct',",
+          "      method: 'POST',",
+          "      header: {",
+          "        'Content-Type': 'application/json',",
+          "        'DirectLogin': 'username=' + username + ',password=' + password + ',consumer_key=' + consumerKey",
+          "      }",
+          "    }, function (err, response) {",
+          "      if (!err && response.json().token) {",
+          "        pm.environment.set('token', response.json().token);",
+          "      }",
+          "    });",
+          "  }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8080",
+      "type": "string"
+    },
+    {
+      "key": "bank_id",
+      "value": "workshop-bank-001",
+      "type": "string"
+    },
+    {
+      "key": "account_id",
+      "value": "acc-001",
+      "type": "string"
+    }
+  ]
+}

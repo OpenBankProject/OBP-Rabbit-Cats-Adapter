@@ -1,0 +1,171 @@
+{
+  "info": {
+    "name": "OBP Workshop",
+    "description": "Workshop collection for testing OBP-API with RabbitMQ adapter",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.environment.get('token')) {",
+          "  const baseUrl = pm.environment.get('base_url') || 'http://127.0.0.1:8080';",
+          "  const username = pm.environment.get('username');",
+          "  const password = pm.environment.get('password');",
+          "  const consumerKey = pm.environment.get('consumer_key');",
+          "  ",
+          "  if (username && password && consumerKey) {",
+          "    pm.sendRequest({",
+          "      url: baseUrl + '/my/logins/direct',",
+          "      method: 'POST',",
+          "      header: {",
+          "        'Content-Type': 'application/json',",
+          "        'DirectLogin': 'username=' + username + ',password=' + password + ',consumer_key=' + consumerKey",
+          "      }",
+          "    }, function (err, response) {",
+          "      if (!err && response.json().token) {",
+          "        pm.environment.set('token', response.json().token);",
+          "      }",
+          "    });",
+          "  }",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Get Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "DirectLogin",
+            "value": "username={{username}},password={{password}},consumer_key={{consumer_key}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/my/logins/direct",
+          "host": ["{{base_url}}"],
+          "path": ["my", "logins", "direct"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200 || pm.response.code === 201) {",
+              "  const jsonData = pm.response.json();",
+              "  if (jsonData.token) {",
+              "    pm.environment.set('token', jsonData.token);",
+              "    console.log('Token saved:', jsonData.token);",
+              "  }",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Banks",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/obp/v5.0.0/banks",
+          "host": ["{{base_url}}"],
+          "path": ["obp", "v5.0.0", "banks"]
+        }
+      }
+    },
+    {
+      "name": "Get Account",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/obp/v5.0.0/banks/{{bank_id}}/accounts/{{account_id}}/account",
+          "host": ["{{base_url}}"],
+          "path": ["obp", "v5.0.0", "banks", "{{bank_id}}", "accounts", "{{account_id}}", "account"]
+        }
+      }
+    },
+    {
+      "name": "Make Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"to\": {\n    \"bank_id\": \"workshop-bank-001\",\n    \"account_id\": \"acc-002\"\n  },\n  \"value\": {\n    \"currency\": \"EUR\",\n    \"amount\": \"10.00\"\n  },\n  \"description\": \"Workshop test payment\",\n  \"charge_policy\": \"SHARED\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/obp/v5.0.0/banks/{{bank_id}}/transaction-request-types/SANDBOX_TAN/transaction-requests",
+          "host": ["{{base_url}}"],
+          "path": ["obp", "v5.0.0", "banks", "{{bank_id}}", "transaction-request-types", "SANDBOX_TAN", "transaction-requests"]
+        }
+      }
+    },
+    {
+      "name": "Get Transactions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "DirectLogin token={{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/obp/v5.0.0/banks/{{bank_id}}/accounts/{{account_id}}/transactions",
+          "host": ["{{base_url}}"],
+          "path": ["obp", "v5.0.0", "banks", "{{bank_id}}", "accounts", "{{account_id}}", "transactions"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8080",
+      "type": "string"
+    },
+    {
+      "key": "bank_id",
+      "value": "workshop-bank-001",
+      "type": "string"
+    },
+    {
+      "key": "account_id",
+      "value": "acc-001",
+      "type": "string"
+    }
+  ]
+}
