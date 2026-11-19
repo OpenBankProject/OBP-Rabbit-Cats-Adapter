@@ -16,5 +16,14 @@ jobs:
           distribution: temurin
           java-version: "17"
           cache: maven
+      # Maven Central answers some first requests from the GitHub runners with "not found" for an artifact it has;
+      # the Google mirror of Central does not.
+      - name: Use the Google mirror of Maven Central
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<'XML'
+          <settings><mirrors><mirror><id>gcs-central</id><mirrorOf>central</mirrorOf>
+          <url>https://maven-central.storage-download.googleapis.com/maven2/</url></mirror></mirrors></settings>
+          XML
       - name: Run all the tests, including the OBP-API contract and the v5.1.0 version floor
         run: mvn -B test
