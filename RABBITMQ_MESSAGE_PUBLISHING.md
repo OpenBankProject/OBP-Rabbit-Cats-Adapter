@@ -376,8 +376,8 @@ messageDocs += MessageDoc(
 ```
 
 These are exposed via:
-- `GET /obp/v2.2.0/message-docs/rabbitmq_vOct2024` - JSON format
-- `GET /obp/v3.1.0/message-docs/rabbitmq_vOct2024/swagger2.0` - Swagger format
+- `GET /obp/v6.0.0/message-docs/rabbitmq_vOct2024` - JSON format
+- `GET /obp/v6.0.0/message-docs/rabbitmq_vOct2024/swagger2.0` - Swagger format
 - `GET /obp/v6.0.0/message-docs/rabbitmq_vOct2024/json-schema` - JSON Schema format
 
 ## Key Files
