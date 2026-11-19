@@ -1,0 +1,54 @@
+{
+ "about": "Written by obp-api-contract/snapshot.py; do not edit by hand.",
+ "obp_api": {
+  "https://k8s.openbankproject.com": {
+   "version": "v6.0.0",
+   "git_commit": "474d4bcc554f1d8e9516e12d85be121d92410aa5"
+  }
+ },
+ "taken_at": "2026-11-19T21:52:18Z",
+ "endpoints": [
+  {
+   "verb": "GET",
+   "path": "/obp/v6.0.0/message-docs/CONNECTOR",
+   "docs_from": "https://k8s.openbankproject.com",
+   "operation_id": "OBPv2.2.0-getMessageDocs",
+   "documented_path": "/obp/v6.0.0/message-docs/CONNECTOR",
+   "fields": [
+    "message_docs",
+    "message_docs[]",
+    "message_docs[].adapter_implementation",
+    "message_docs[].adapter_implementation.group",
+    "message_docs[].adapter_implementation.suggested_order",
+    "message_docs[].dependent_endpoints",
+    "message_docs[].dependent_endpoints[]",
+    "message_docs[].dependent_endpoints[].name",
+    "message_docs[].dependent_endpoints[].version",
+    "message_docs[].description",
+    "message_docs[].example_inbound_message",
+    "message_docs[].example_inbound_message.jsonString",
+    "message_docs[].example_outbound_message",
+    "message_docs[].example_outbound_message.jsonString",
+    "message_docs[].inboundAvroSchema",
+    "message_docs[].inboundAvroSchema.jsonString",
+    "message_docs[].inbound_topic",
+    "message_docs[].message_format",
+    "message_docs[].outboundAvroSchema",
+    "message_docs[].outboundAvroSchema.jsonString",
+    "message_docs[].outbound_topic",
+    "message_docs[].process",
+    "message_docs[].requiredFieldInfo",
+    "message_docs[].requiredFieldInfo.data.bankId",
+    "message_docs[].requiredFieldInfo.data.bankId[]"
+   ]
+  },
+  {
+   "verb": "GET",
+   "path": "/obp/v6.0.0/message-docs/CONNECTOR/json-schema",
+   "docs_from": "https://k8s.openbankproject.com",
+   "operation_id": "OBPv6.0.0-getMessageDocsJsonSchema",
+   "documented_path": "/obp/v6.0.0/message-docs/CONNECTOR/json-schema",
+   "fields": []
+  }
+ ]
+}
