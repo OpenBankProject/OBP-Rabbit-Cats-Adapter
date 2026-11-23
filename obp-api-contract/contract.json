@@ -1,0 +1,42 @@
+{
+ "about": "Every OBP-API call the adapter makes: verb, path (OBP placeholders in capitals), the source file and the text that makes the call (needles), and the response fields the code reads. All of them are in the discovery server (the /messages page and the JSON Schema pages) and read OBP-API's message docs. The adapter's RabbitMQ and gRPC traffic is not an OBP-API call and is not listed. obp-api-contract/snapshot.json is what OBP-API documents for these calls, written by obp-api-contract/snapshot.py; src/test/scala/com/tesobe/obp/adapter/ObpApiContractTest.scala checks this list against the source and the snapshot.",
+ "version_policy": "Each call writes the OBP-API version it needs in its own path. One configured version cannot serve them all, because an endpoint exists only in the versions OBP-API documents it for. The contract test checks every call against the endpoint documented for the version it names, and ObpApiVersionTest fails on any version below v5.1.0 in the source, the scripts and the docs. To move a call to a newer version, change its path and run snapshot.py again.",
+ "calls": [
+  {
+   "verb": "GET",
+   "path": "/obp/v6.0.0/message-docs/CONNECTOR",
+   "source": "src/main/scala/com/tesobe/obp/adapter/http/DiscoveryServer.scala",
+   "needles": [
+    "s\"${config.http.obpApiUrl}/obp/v6.0.0/message-docs/rabbitmq_vOct2024\""
+   ],
+   "reads": [
+    "message_docs",
+    "message_docs[].process"
+   ],
+   "note": "The /messages page lists the processes of the rabbitmq_vOct2024 connector with their message counts. OBP-API documents this endpoint as OBPv2.2.0-getMessageDocs, which a later version serves too."
+  },
+  {
+   "verb": "GET",
+   "path": "/obp/v6.0.0/message-docs/CONNECTOR/json-schema",
+   "source": "src/main/scala/com/tesobe/obp/adapter/http/DiscoveryServer.scala",
+   "needles": [
+    "s\"${config.http.obpApiUrl}/obp/v6.0.0/message-docs/$connector/json-schema\"",
+    "s\"${config.http.obpApiUrl}/obp/v6.0.0/message-docs/rabbitmq_vOct2024/json-schema\""
+   ],
+   "reads": [
+    "definitions"
+   ],
+   "undocumented_fields": [
+    "definitions"
+   ],
+   "note": "The first needle hands the document to the page as it is; the second reads the OutBound and InBound definitions of one process. OBP-API documents no typed response for a JSON Schema document."
+  }
+ ],
+ "not_calls": [
+  {
+   "source": "src/main/scala/com/tesobe/obp/adapter/http/DiscoveryServer.scala",
+   "fragment": "<li><a href=\"${config.http.obpApiUrl}/obp/v6.0.0/message-docs/rabbitmq_vOct2024\"",
+   "reason": "a link on the page the adapter serves, which the reader's browser follows"
+  }
+ ]
+}
