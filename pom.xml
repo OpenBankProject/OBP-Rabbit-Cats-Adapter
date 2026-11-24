@@ -193,6 +193,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.scalatestplus</groupId>
+      <artifactId>scalacheck-1-17_${scala.version}</artifactId>
+      <version>3.2.18.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.typelevel</groupId>
       <artifactId>cats-effect-testing-scalatest_${scala.version}</artifactId>
       <version>1.5.0</version>
